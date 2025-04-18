@@ -1,0 +1,16 @@
+{{- if not (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "govway-shared-pvc") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: govway-shared-pvc
+  annotations:
+    "helm.sh/resource-policy": keep  # Prevents Helm from deleting the PVC
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: azurefile-csi
+  #storageClassName: azure-file-fse
+{{- end }}

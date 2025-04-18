@@ -1,0 +1,33 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "service.fullname" . }}-gw-console
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  path: /govwayConsole
+  port:
+    targetPort: {{ .Values.service.port }}-{{ .Values.service.protocol | lower }}
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: {{ include "service.fullname" . }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "service.fullname" . }}-gw-monitor
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  path: /govwayMonitor
+  port:
+    targetPort: {{ .Values.service.port }}-{{ .Values.service.protocol | lower }}
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: {{ include "service.fullname" . }}
+{{- end }}

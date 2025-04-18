@@ -1,0 +1,4 @@
+FROM linkitaly/govway:3.3.16.p1_batch_postgres
+
+# Copy all directories from Providers to /mnt/jars
+COPY cloud/ /jdbclibs/

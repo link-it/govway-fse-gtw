@@ -1,0 +1,2 @@
+FROM linkitaly/govway:3.3.16.p1_manager_postgres
+COPY cloud/ /jdbclibs/

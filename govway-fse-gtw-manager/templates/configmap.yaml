@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "service.fullname" . }}-cm
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/hook-weight: "-1"
+data:
+  console_local.properties: |
+{{ .Files.Get "files/console_local.properties" | indent 4 }}
+  govway.nodirun.properties: |
+{{ .Files.Get "files/govway.nodirun.properties" | indent 4 }}
+  monitor_local.properties: |
+{{ .Files.Get "files/monitor_local.properties" | indent 4 }}
+  ocsp.properties: |
+{{ .Files.Get "files/ocsp.properties" | indent 4 }}
