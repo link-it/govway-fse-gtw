@@ -1,4 +1,5 @@
 FROM linkitaly/govway:3.3.16.p1_run_postgres
-
-# Copy all directories from Providers to /mnt/jars
-COPY cloud/ /jdbclibs/
+# Copio librerie providers cloud
+COPY cloud/azure/lib/*.jar /jdbclibs/azure
+# Copio licenze associate alle librerie distribuite
+COPY cloud/*/third-party-licenses* /usr/share/licenses/third-party-licenses/
