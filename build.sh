@@ -18,3 +18,12 @@ do
 done
 
 helm repo index .
+
+
+echo 
+echo "helm repo add govway-fse https://link-it.github.io/govway-fse-gtw"
+echo
+echo "helm fecth govway-fse/govway-fse-gtw-run --version ${VERSION}"
+echo "helm fecth govway-fse/govway-fse-gtw-manager --version ${VERSION}"
+echo "helm fecth govway-fse/govway-fse-gtw-batch --version ${VERSION}"
+echo
