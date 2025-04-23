@@ -14,7 +14,7 @@ docker push linkitaly/govway-fse-gtw:${VERSION}_batch
 sed -r -i -e "s/^version:.*$/version: ${VERSION}/" */Chart.yaml
 for chart in govway-fse-gtw-run govway-fse-gtw-manager govway-fse-gtw-batch
 do
-    helm package $chart --destination govway-fse-gtw-helm --version ${VERSION}
+   helm package $chart --destination govway-fse-gtw-helm --version ${VERSION}
 done
 
 helm repo index .
@@ -23,7 +23,7 @@ helm repo index .
 echo 
 echo "helm repo add govway-fse https://link-it.github.io/govway-fse-gtw"
 echo
-echo "helm fecth govway-fse/govway-fse-gtw-run --version ${VERSION}"
-echo "helm fecth govway-fse/govway-fse-gtw-manager --version ${VERSION}"
-echo "helm fecth govway-fse/govway-fse-gtw-batch --version ${VERSION}"
+echo "helm fetch govway-fse/govway-fse-gtw-run --version ${VERSION}"
+echo "helm fetch govway-fse/govway-fse-gtw-manager --version ${VERSION}"
+echo "helm fetch govway-fse/govway-fse-gtw-batch --version ${VERSION}"
 echo
