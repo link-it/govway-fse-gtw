@@ -3,9 +3,9 @@ entries:
   govway-fse-gtw-batch:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-24T19:19:08.898457853+02:00"
+    created: "2025-04-24T20:22:51.183217864+02:00"
     description: GovWay - Componente Batch di Generazione Statistiche
-    digest: 74654b6a68a4f6828f4629b70930d40edfffea47c06ee5edf94928d4a2109b8d
+    digest: 438c23c65873c99923d7be9bda889c608b93ec0b3edf9b15d86660a33a158317
     name: govway-fse-gtw-batch
     type: application
     urls:
@@ -13,7 +13,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-24T19:19:08.898204818+02:00"
+    created: "2025-04-24T20:22:51.182969135+02:00"
     description: GovWay - Componente Batch di Generazione Statistiche
     digest: 727c1a24fb11d55ccf933ad36aae974cec6d570ec14d0cfe764c3f9b1a57ac7f
     name: govway-fse-gtw-batch
@@ -24,9 +24,9 @@ entries:
   govway-fse-gtw-manager:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-24T19:19:08.899434678+02:00"
+    created: "2025-04-24T20:22:51.184098888+02:00"
     description: GovWay - Componente di Management
-    digest: ccf379544a6d38aba04e4b3cacebb0fdd2f2563b6458a367b3b0016aaee01529
+    digest: df7a10fa4fb63156906154e57132ca260a90c1dd8d33bcea5bb64bc1bb373009
     name: govway-fse-gtw-manager
     type: application
     urls:
@@ -34,7 +34,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-24T19:19:08.898919744+02:00"
+    created: "2025-04-24T20:22:51.183671108+02:00"
     description: GovWay - Componente di Management
     digest: 2e44bbff4c2ceb2bf50b156345e29372b5b14e08e3e613c6677014106742411e
     name: govway-fse-gtw-manager
@@ -45,9 +45,9 @@ entries:
   govway-fse-gtw-run:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-24T19:19:08.901267984+02:00"
+    created: "2025-04-24T20:22:51.185860211+02:00"
     description: GovWay - Componente API Gateway
-    digest: 944aa2e668aca255c7b07b63f5e73467fe6055ee05083938be26b439e1d8c9e5
+    digest: 464db9ba81b039898e543daff2e56675886a4c9657f2854784d40ef92675c815
     name: govway-fse-gtw-run
     type: application
     urls:
@@ -55,7 +55,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-24T19:19:08.899974662+02:00"
+    created: "2025-04-24T20:22:51.184629138+02:00"
     description: GovWay - Componente API Gateway
     digest: cb1828d17db1787102065de82d0474ef11f0cdb8eabffa4e61d47a6e529208d5
     name: govway-fse-gtw-run
@@ -63,4 +63,4 @@ entries:
     urls:
     - govway-fse-gtw-helm/govway-fse-gtw-run-0.3.0.tgz
     version: 0.3.0
-generated: "2025-04-24T19:19:08.897860819+02:00"
+generated: "2025-04-24T20:22:51.182606848+02:00"
