@@ -11,6 +11,5 @@ spec:
   resources:
     requests:
       storage: 30Gi
-  #storageClassName: azurefile-csi
-  storageClassName: azure-file-fse
+  storageClassName: {{- .Values.cloud.storageClassName }}
 {{- end }}

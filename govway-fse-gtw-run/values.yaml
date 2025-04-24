@@ -31,7 +31,8 @@ fullnameOverride: ""
 cloud:
   provider: "azure"
   jdbcLibs: "/jdbclibs"
-
+  storageClassName: "azure-file-fse"
+  
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -121,7 +122,7 @@ affinity: {}
 keystore:
   authIni: ""
   authCentralizzato: "" 
-  
+
 truststore:
   caSalute: ""
   authIni: ""
