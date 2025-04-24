@@ -11,5 +11,5 @@ spec:
   resources:
     requests:
       storage: 30Gi
-  storageClassName: {{- .Values.cloud.storageClassName }}
+  storageClassName: {{ .Values.cloud.storageClassName }}
 {{- end }}
