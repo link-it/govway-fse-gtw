@@ -21,6 +21,10 @@ spec:
       labels:
         {{- include "service.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}``
       serviceAccountName: {{ include "service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -78,7 +82,7 @@ spec:
               value: "/mnt/secrets-store/app-cert"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_run" .Chart.Version) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
@@ -112,6 +116,10 @@ spec:
               mountPath: "/etc/govway/keystore/{{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}
+            - name: {{ include "service.fullname" . }}-secrets-store
+              mountPath: "/etc/govway/keystore/{{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}"
+              readOnly: true
+              subPath: {{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}
             - name: {{ include "service.fullname" . }}-truststore-volume
               mountPath: "/etc/govway/truststore/{{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}"
               subPath: {{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}

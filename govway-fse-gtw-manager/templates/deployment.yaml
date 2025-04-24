@@ -36,6 +36,8 @@ spec:
                 configMapKeyRef:
                   name: network-address
                   key: govway-service-address
+            - name: "RUN_SERVICE"
+              value: {{ required "A valid .Values.govway.runService entry required!" (index (.Values.govway) "runService") }}
             - name: GOVWAY_POP_DB_SKIP
               value: "{{ .Values.govway.popDbSkip }}"
             - name: "GOVWAY_DS_CONN_PARAM"
@@ -87,7 +89,7 @@ spec:
               value: "/mnt/secrets-store/app-cert"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_manager" .Chart.Version)  }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}

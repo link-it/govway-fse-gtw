@@ -16,7 +16,7 @@ spec:
           serviceAccountName: {{ include "it-fse-gtw-govway-batch.serviceAccountName" . }}
           containers:
           - name: {{ include "it-fse-gtw-govway-batch.fullname" . }}-statistiche-giornaliere
-            image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_batch" .Chart.Version)  }}"
             imagePullPolicy: Always
             args:
             - giornaliere

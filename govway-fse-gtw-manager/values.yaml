@@ -14,14 +14,16 @@ govway:
   serviceName: "GovWay-Manager"
   loggingLevel: "Trace"
   logLevel: "error"
-
+  runService: ""
+  
 image:
   registry:
     urlGovWay: "linkitaly"
     repositoryGovWay: "govway-fse-gtw"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "master_manager_postgres"
+  # tag: "master_manager_postgres"
+
 
 imagePullSecrets: []
 nameOverride: ""
