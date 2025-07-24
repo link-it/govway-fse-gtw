@@ -9,7 +9,6 @@ govway:
   popDbSkip: FALSE
   readyDbCheckSkip: TRUE
   defaultEntityName: "SOGEI"
-  opentelemetryType: "Azure"
   #jdbcPath: "/mnt/jars"
   serviceName: "GovWay-Manager"
   loggingLevel: "Trace"
@@ -30,6 +29,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 cloud:
+  # Valori utilizzabili: azure, aws
   provider: "azure"
   jdbcLibs: "/jdbclibs"
 
