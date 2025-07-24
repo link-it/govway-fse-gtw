@@ -91,6 +91,8 @@ spec:
                 secretKeyRef:
                   key: app-id-{{ include "service.fullname" . }}
                   name: {{ include "service.fullname" . }}-gtw-secrets
+            - name: "AWS_CLIENT_CERTIFICATE_PATH"
+              value: "/mnt/secrets-store/app-cert"
             {% endif %}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

@@ -76,6 +76,7 @@ spec:
               value: {{ .Values.govway.defaultEntityName }}
             - name: GOVWAY_DS_JDBC_LIBS
               value: "{{ .Values.cloud.jdbcLibs }}/{{ .Values.cloud.provider }}"
+            {% if .Values.cloud.provider == "azure" %}
             - name: AZURE_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}
             - name: "AZURE_TENANT_ID"
@@ -87,6 +88,19 @@ spec:
                   name: {{ include "service.fullname" . }}-gtw-secrets
             - name: "AZURE_CLIENT_CERTIFICATE_PATH"
               value: "/mnt/secrets-store/app-cert"
+            {% elif .Values.cloud.provider == "aws" %}
+            - name: AWS_LOG_LEVEL
+              value: {{ .Values.govway.logLevel }}
+            - name: "AWS_ROLE_ARN"
+              value: {{ .Values.secrets.tenantId | quote }}
+            - name: "AWS_ACCESS_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  key: app-id-{{ include "service.fullname" . }}
+                  name: {{ include "service.fullname" . }}-gtw-secrets
+            - name: "AWS_CLIENT_CERTIFICATE_PATH"
+              value: "/mnt/secrets-store/app-cert"
+            {% endif %}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_manager" .Chart.Version)  }}"

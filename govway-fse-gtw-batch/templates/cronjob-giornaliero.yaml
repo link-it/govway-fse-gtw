@@ -64,6 +64,7 @@ spec:
               value: {{ .Values.govway.defaultEntityName }}
             - name: GOVWAY_DS_JDBC_LIBS
               value: "{{ .Values.cloud.jdbcLibs }}/{{ .Values.cloud.provider }}"
+            {% if .Values.cloud.provider == "azure" %}
             - name: AZURE_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}
             - name: "AZURE_TENANT_ID"
@@ -71,10 +72,23 @@ spec:
             - name: "AZURE_CLIENT_ID"
               valueFrom:
                 secretKeyRef:
-                  key: app-id-{{ include "it-fse-gtw-govway-batch.fullname" . }}
-                  name: {{ include "it-fse-gtw-govway-batch.fullname" . }}-gtw-secrets
+                  key: app-id-{{ include "service.fullname" . }}
+                  name: {{ include "service.fullname" . }}-gtw-secrets
             - name: "AZURE_CLIENT_CERTIFICATE_PATH"
               value: "/mnt/secrets-store/app-cert"
+            {% elif .Values.cloud.provider == "aws" %}
+            - name: AWS_LOG_LEVEL
+              value: {{ .Values.govway.logLevel }}
+            - name: "AWS_ROLE_ARN"
+              value: {{ .Values.secrets.tenantId | quote }}
+            - name: "AWS_ACCESS_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  key: app-id-{{ include "service.fullname" . }}
+                  name: {{ include "service.fullname" . }}-gtw-secrets
+            - name: "AWS_CLIENT_CERTIFICATE_PATH"
+              value: "/mnt/secrets-store/app-cert"
+            {% endif %}
             volumeMounts:
             - name: {{ include "it-fse-gtw-govway-batch.fullname" . }}-secrets-store
               mountPath: "/mnt/secrets-store"
