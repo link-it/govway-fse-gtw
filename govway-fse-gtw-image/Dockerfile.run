@@ -4,3 +4,7 @@ COPY cloud/azure/lib/ /jdbclibs/azure/
 COPY cloud/aws/lib/ /jdbclibs/aws/
 # Copio licenze associate alle librerie distribuite
 COPY cloud/*/third-party-licenses* /usr/share/licenses/third-party-licenses/
+COPY scripts/entrypoint.sh scripts/initgovway.sh /usr/local/bin/
+RUN  chown -R tomcat:0 /usr/local/bin/entrypoint.sh /usr/local/bin/initgovway.sh \
+&& chmod ug=rx /usr/local/bin/entrypoint.sh /usr/local/bin/initgovway.sh 
+

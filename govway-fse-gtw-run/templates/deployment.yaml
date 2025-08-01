@@ -69,6 +69,8 @@ spec:
               value: {{ .Values.govway.defaultEntityName }}
             - name: GOVWAY_DS_JDBC_LIBS
               value: "{{ .Values.cloud.jdbcLibs }}/{{ .Values.cloud.provider }}"
+            - name: FSE_CLOUD_PROVIDER
+              value: {{ .Values.cloud.provider | quote }}
             {% if .Values.cloud.provider == "azure" %}
             - name: AZURE_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}

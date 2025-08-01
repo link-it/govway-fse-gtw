@@ -5,3 +5,8 @@ COPY cloud/aws/lib/ /jdbclibs/aws/
 
 # Copio licenze associate alle librerie distribuite
 COPY cloud/*/third-party-licenses* /usr/share/licenses/third-party-licenses/
+COPY scripts/run_batch.sh /usr/local/bin/
+RUN  chown -R tomcat:0 /usr/local/bin/run_batch.sh \
+&& chmod ug=rx /usr/local/bin/run_batch.sh 
+
+
