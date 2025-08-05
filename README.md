@@ -31,6 +31,7 @@ Per installare un chart nel cluster Kubernetes:
 
 
 helm install <nome-release> govway-fse/<nome-chart> \
+  --version 1.1.0-alfa.1 \
   --namespace <namespace> \
   --values <percorso-file-valori>
 ```
@@ -40,7 +41,8 @@ helm install <nome-release> govway-fse/<nome-chart> \
 In alternativa, è possibile configurare i valori direttamente durante l'installazione utilizzando il parametro `--set`. Esempio:
 ```bash
 helm install <nome-release> govway-fse/<nome-chart> \
-  --set cloud.provider=<azure o aws> \
+  --version 1.1.0-alfa.1 \
+  --set cloudProvider=<azure o aws> \
   --set "imagePullSecrets[0].name=<nome-secret>" \
   --set secrets.keyvaultName="<keyvault-name>" \
   --set secrets.tenantId="<tenant-id>" \
@@ -51,4 +53,11 @@ helm install <nome-release> govway-fse/<nome-chart> \
 Sostituisci i segnaposto `<...>` con i valori appropriati per il tuo ambiente.
 
 
-Assicurati che tutte le configurazioni nei file `values.yaml` siano aggiornate in base al tuo ambiente di destinazione. In particolare è necessario impostare la variabile **"cloud.provider"** ad uno dei due valori ammissibili **"azure"** o **"aws"**
+Assicurati che tutte le configurazioni nei file `values.yaml` siano aggiornate in base al tuo ambiente di destinazione. In particolare è necessario impostare la variabile **"cloudProvider"** ad uno dei due valori ammissibili **"azure"** o **"aws"**
+
+- se il cloudProvider scelto e' **"aws"** e' necessario settare anche la variabile **'secrets.iamrole'** inserendo l'ARN del ruolo IAM da utiilzzare per l'autenticazione IRSA
+
+- se il cloudProvider scelto e' **"aws"** e' necessario settare anche le variabile **'secrets.tenantId'** inserendo il TenantID Azure
+
+
+A seconda del provider utilizzato e' necesario impostare alcune variabili obbligatorie. Alcuni esempi possono essere trovati dentro la directory **exampleValues**
