@@ -1,0 +1,17 @@
+cloudProvider: azure
+imagePullSecrets: ["nome-secret"]
+secrets:
+  keyvaultName: "TESTKEYVAULTNAME"
+  tenantId: "INUTILEPERAWS"
+  secretKeyVaultName: "TESTSECRETKEYVAULTNAME"
+
+keystore:
+  authIni: "A1GTW-INI.pfx"
+  authCentralizzato: "auth-centralized-services.pfx" 
+
+truststore:
+  caSalute: "tsCASalute.jks"
+  authIni: "tsINI.jks"
+ingress:
+  hosts: 
+    - macchenneso.local

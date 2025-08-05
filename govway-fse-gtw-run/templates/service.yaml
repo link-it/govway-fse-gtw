@@ -1,9 +1,10 @@
+{{- include "govway_fse_gtw.validateCloudProvider" . }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "service.fullname" . }}
+  name: {{ include "govway_fse_gtw.fullname" . }}
   labels:
-    {{- include "service.labels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,6 +13,6 @@ spec:
       protocol: {{ .Values.service.protocol }}
       name: {{ .Values.service.port }}-{{ .Values.service.protocol | lower }}
   selector:
-    {{- include "service.selectorLabels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.selectorLabels" . | nindent 4 }}
   sessionAffinity: None
   type: ClusterIP

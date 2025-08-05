@@ -1,9 +1,10 @@
+{{- include "govway_fse_gtw.validateCloudProvider" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "service.fullname" . }}
+  name: {{ include "govway_fse_gtw.fullname" . }}
   labels:
-    {{- include "service.labels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaler.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,7 +12,7 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-      {{- include "service.selectorLabels" . | nindent 6 }}
+      {{- include "govway_fse_gtw.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,13 +20,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "service.selectorLabels" . | nindent 8 }}
+        {{- include "govway_fse_gtw.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "service.serviceAccountName" . }}
+      serviceAccountName: {{ include "govway_fse_gtw.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -62,16 +63,16 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: app-name
-                  name: {{ include "service.fullname" . }}-gtw-secrets
+                  name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
             - name: GOVWAY_READY_DB_CHECK_SKIP
               value: "{{ .Values.govway.readyDbCheckSkip }}"
             - name: GOVWAY_DEFAULT_ENTITY_NAME
               value: {{ .Values.govway.defaultEntityName }}
             - name: GOVWAY_DS_JDBC_LIBS
-              value: "{{ .Values.cloud.jdbcLibs }}/{{ .Values.cloud.provider }}"
+              value: "{{ .Values.jdbcLibs }}/{{ .Values.cloudProvider }}"
             - name: FSE_CLOUD_PROVIDER
-              value: {{ .Values.cloud.provider | quote }}
-            {% if .Values.cloud.provider == "azure" %}
+              value: {{ .Values.cloudProvider | quote }}
+            {{- if eq .Values.cloudProvider "azure" }}
             - name: AZURE_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}
             - name: "AZURE_TENANT_ID"
@@ -79,26 +80,19 @@ spec:
             - name: "AZURE_CLIENT_ID"
               valueFrom:
                 secretKeyRef:
-                  key: app-id-{{ include "service.fullname" . }}
-                  name: {{ include "service.fullname" . }}-gtw-secrets
+                  key: app-id-{{ include "govway_fse_gtw.fullname" . }}
+                  name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
             - name: "AZURE_CLIENT_CERTIFICATE_PATH"
               value: "/mnt/secrets-store/app-cert"
-            {% elif .Values.cloud.provider == "aws" %}
+            {{ else if eq .Values.cloudProvider "aws" }}
             - name: AWS_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}
-            - name: "AWS_ROLE_ARN"
-              value: {{ .Values.secrets.tenantId | quote }}
-            - name: "AWS_ACCESS_KEY_ID"
-              valueFrom:
-                secretKeyRef:
-                  key: app-id-{{ include "service.fullname" . }}
-                  name: {{ include "service.fullname" . }}-gtw-secrets
             - name: "AWS_CLIENT_CERTIFICATE_PATH"
               value: "/mnt/secrets-store/app-cert"
-            {% endif %}
+            {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_run" .Chart.Version) }}"
+          image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_run" .Chart.AppVersion) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
@@ -125,21 +119,21 @@ spec:
             - mountPath: /etc/govway/govway.fileTrace.log4j2.properties
               name: govway-fse-gtw-run-cm-volume
               subPath: govway.fileTrace.log4j2.properties
-            - name: {{ include "service.fullname" . }}-secrets-store
+            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
               mountPath: "/mnt/secrets-store"
               readOnly: true
-            - name: {{ include "service.fullname" . }}-secrets-store
+            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
               mountPath: "/etc/govway/keystore/{{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}
-            - name: {{ include "service.fullname" . }}-secrets-store
+            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
               mountPath: "/etc/govway/keystore/{{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}
-            - name: {{ include "service.fullname" . }}-truststore-volume
+            - name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
               mountPath: "/etc/govway/truststore/{{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}"
               subPath: {{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}
-            - name: {{ include "service.fullname" . }}-truststore-volume
+            - name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
               mountPath: "/etc/govway/truststore/{{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
@@ -156,7 +150,7 @@ spec:
               - key:  {{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.jks" (index (.Values.keystore) "authIni") }}
                 path:  {{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.jks" (index (.Values.keystore) "authIni") }}
             name: ini-client-truststore-cm
-          name: {{ include "service.fullname" . }}-keystore-store
+          name: {{ include "govway_fse_gtw.fullname" . }}-keystore-store
         - configMap:
             defaultMode: 420
             items:
@@ -165,19 +159,21 @@ spec:
               - key: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
                 path: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
             name: govway-truststore-cm
-          name: {{ include "service.fullname" . }}-truststore-volume
+          name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
         - configMap:
             defaultMode: 420
-            name: {{ include "service.fullname" . }}-cm
+            name: {{ include "govway_fse_gtw.fullname" . }}-cm
           name: govway-fse-gtw-run-cm-volume
-        - name: {{ include "service.fullname" . }}-secrets-store
+        - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ include "service.fullname" . }}-azure-keyvault-secrets  # Reference the dynamically generated SecretProviderClass
+              secretProviderClass: {{ include "govway_fse_gtw.fullname" . }}-{{ .Values.cloudProvider }}-keyvault-secrets  # Reference the dynamically generated SecretProviderClass
+            {{- if eq .Values.cloudProvider "azure" }}
             nodePublishSecretRef:
               name: {{ required "A valid .Values.secrets.secretKeyVaultName entry required!" (index (.Values.secrets) "secretKeyVaultName") }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

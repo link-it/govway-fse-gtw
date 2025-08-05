@@ -1,0 +1,7 @@
+cloudProvider: azure
+imagePullSecrets: ["nome-secret"]
+secrets:
+  keyvaultName: "TESTKEYVAULTNAME"
+  tenantId: "INUTILEPERAWS"
+  secretKeyVaultName: "TESTSECRETKEYVAULTNAME"
+

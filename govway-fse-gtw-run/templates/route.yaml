@@ -1,17 +1,18 @@
-{{- if .Values.route.enabled }}
+{{- include "govway_fse_gtw.validateCloudProvider" . }}
+{{- if index .Values.providerConfig .Values.cloudProvider "route.enabled" }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ include "service.fullname" . }}
+  name: {{ include "govway_fse_gtw.fullname" . }}
   labels:
-    {{- include "service.labels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.labels" . | nindent 4 }}
 spec:
   path: /govway/rest/in/
   port:
-    targetPort: {{ .Values.service.port }}-{{ .Values.service.protocol | lower }}
+    targetPort: {{ .Values.govway_fse_gtw.port }}-{{ .Values.govway_fse_gtw.protocol | lower }}
   tls:
     termination: edge
   to:
     kind: Service
-    name: {{ include "service.fullname" . }}
+    name: {{ include "govway_fse_gtw.fullname" . }}
 {{- end }}

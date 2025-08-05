@@ -90,7 +90,7 @@ GOVWAY_STAT_DB_USER: ${GOVWAY_STAT_DB_USER}
             else
                 GOVWAY_STAT_DS_CONN_PARAM='wrapperPlugins=iam'
             fi    
-            export GOVWAY_DS_DRIVER_CLASS='software.aws.rds.jdbc.postgresql.Driver'
+            export GOVWAY_DS_DRIVER_CLASS='software.amazon.jdbc.Driver'
         else
             export GOVWAY_DS_DRIVER_CLASS='org.postgresql.Driver'
         fi

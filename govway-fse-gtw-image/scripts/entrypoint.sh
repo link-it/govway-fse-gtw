@@ -120,7 +120,7 @@ GOVWAY_DB_USER: ${GOVWAY_DB_USER}
             else
                 GOVWAY_STAT_DS_CONN_PARAM='wrapperPlugins=iam'
             fi    
-            export GOVWAY_DS_DRIVER_CLASS='software.aws.rds.jdbc.postgresql.Driver'
+            export GOVWAY_DS_DRIVER_CLASS='software.amazon.jdbc.Driver'
     
         else
             export GOVWAY_DS_DRIVER_CLASS='org.postgresql.Driver'
@@ -465,17 +465,13 @@ then
 
     cat - << EOCLI > /tmp/__fix_aws.cli
 # Correggi Resource org.govway.datasource
-/Server/GlobalNamingResources/Resource[@name="org.govway.datasource"]:delete 
-/Server/GlobalNamingResources/Resource:add name=org.govway.datasource, auth=Container, type=javax.sql.DataSource, driverClassName=\${GOVWAY_DS_DRIVER_CLASS}, url=${JDBC_RUN_URL}, username=\${GOVWAY_DB_USER}, password=\${GOVWAY_DB_PASSWORD}, initialSize=\${GOVWAY_INITIALSIZE_POOL}, maxTotal=\${GOVWAY_MAX_POOL}, minIdle=\${GOVWAY_MINIDLE_POOL}, maxIdle=\${GOVWAY_MAXIDLE_POOL}, maxWaitMillis=\${GOVWAY_DS_BLOCKING_TIMEOUT:-30000}, defaultTransactionIsolation=READ_COMMITTED, validationQuery=\${GOVWAY_DS_VALID_CONNECTION_SQL}, validationQueryTimeout=10, testOnBorrow=true, testOnReturn=false, testWhileIdle=true, minEvictableIdleTimeMillis=300000, numTestsPerEvictionRun=10, timeBetweenEvictionRunsMillis=60000, poolPreparedStatements=true, maxOpenPreparedStatements=\${GOVWAY_DS_PSCACHESIZE:-100}, logAbandoned=true, removeAbandonedOnBorrow=\${GOVWAY_DS_REMOVEABANDONED:-false}, removeAbandonedOnMaintenance=\${GOVWAY_DS_REMOVEABANDONED:-false}, removeAbandonedTimeout=\${GOVWAY_DS_REMOVEABANDONED_TIMEOUT:-300}
+/Server/GlobalNamingResources/Resource[@name="org.govway.datasource"]:write-attribute url=${JDBC_RUN_URL}
 # Correggi Resource org.govway.datasource.console
-/Server/GlobalNamingResources/Resource[@name="org.govway.datasource.console"]:delete 
-/Server/GlobalNamingResources/Resource:add name=org.govway.datasource.console, auth=Container, type=javax.sql.DataSource, driverClassName=\${GOVWAY_DS_DRIVER_CLASS}, url=${JDBC_CONF_URL}, username=\${GOVWAY_CONF_DB_USER}, password=\${GOVWAY_CONF_DB_PASSWORD}, initialSize=\${GOVWAY_CONF_INITIALSIZE_POOL}, maxTotal=\${GOVWAY_CONF_MAX_POOL}, minIdle=\${GOVWAY_CONF_MINIDLE_POOL}, maxIdle=\${GOVWAY_CONF_MAXIDLE_POOL}, maxWaitMillis=\${GOVWAY_CONF_DS_BLOCKING_TIMEOUT:-30000}, defaultTransactionIsolation=READ_COMMITTED, validationQuery=\${GOVWAY_DS_VALID_CONNECTION_SQL}, validationQueryTimeout=10, testOnBorrow=true, testOnReturn=false, testWhileIdle=true, minEvictableIdleTimeMillis=300000, numTestsPerEvictionRun=10, timeBetweenEvictionRunsMillis=60000, poolPreparedStatements=true, maxOpenPreparedStatements=\${GOVWAY_CONF_DS_PSCACHESIZE:-100}, logAbandoned=true, removeAbandonedOnBorrow=\${GOVWAY_CONF_DS_REMOVEABANDONED:-false}, removeAbandonedOnMaintenance=\${GOVWAY_CONF_DS_REMOVEABANDONED:-false}, removeAbandonedTimeout=\${GOVWAY_CONF_DS_REMOVEABANDONED_TIMEOUT:-300}
+/Server/GlobalNamingResources/Resource[@name="org.govway.datasource.console"]:write-attribute url=${JDBC_CONF_URL}
 # Correggi Resource org.govway.datasource.tracciamento
-/Server/GlobalNamingResources/Resource[@name="org.govway.datasource.tracciamento"]:delete 
-/Server/GlobalNamingResources/Resource:add name=org.govway.datasource.tracciamento, auth=Container, type=javax.sql.DataSource, driverClassName=\${GOVWAY_DS_DRIVER_CLASS}, url=${JDBC_TRAC_URL}, username=\${GOVWAY_TRAC_DB_USER}, password=\${GOVWAY_TRAC_DB_PASSWORD}, initialSize=\${GOVWAY_TRAC_INITIALSIZE_POOL}, maxTotal=\${GOVWAY_TRAC_MAX_POOL}, minIdle=\${GOVWAY_TRAC_MINIDLE_POOL}, maxIdle=\${GOVWAY_TRAC_MAXIDLE_POOL}, maxWaitMillis=\${GOVWAY_TRAC_DS_BLOCKING_TIMEOUT:-30000}, defaultTransactionIsolation=READ_COMMITTED, validationQuery=\${GOVWAY_DS_VALID_CONNECTION_SQL}, validationQueryTimeout=10, testOnBorrow=true, testOnReturn=false, testWhileIdle=true, minEvictableIdleTimeMillis=300000, numTestsPerEvictionRun=10, timeBetweenEvictionRunsMillis=60000, poolPreparedStatements=true, maxOpenPreparedStatements=\${GOVWAY_TRAC_DS_PSCACHESIZE:-100}, logAbandoned=true, removeAbandonedOnBorrow=\${GOVWAY_TRAC_DS_REMOVEABANDONED:-false}, removeAbandonedOnMaintenance=\${GOVWAY_TRAC_DS_REMOVEABANDONED:-false}, removeAbandonedTimeout=\${GOVWAY_TRAC_DS_REMOVEABANDONED_TIMEOUT:-300}
+/Server/GlobalNamingResources/Resource[@name="org.govway.datasource.tracciamento"]:write-attribute url=${JDBC_TRAC_URL}
 # Correggi Resource org.govway.datasource.statistiche
-/Server/GlobalNamingResources/Resource[@name="org.govway.datasource.statistiche"]:delete 
-/Server/GlobalNamingResources/Resource:add name=org.govway.datasource.statistiche, auth=Container, type=javax.sql.DataSource, driverClassName=\${GOVWAY_DS_DRIVER_CLASS}, url=${JDBC_STAT_URL}, username=\${GOVWAY_STAT_DB_USER}, password=\${GOVWAY_STAT_DB_PASSWORD}, initialSize=\${GOVWAY_STAT_INITIALSIZE_POOL}, maxTotal=\${GOVWAY_STAT_MAX_POOL}, minIdle=\${GOVWAY_STAT_MINIDLE_POOL}, maxIdle=\${GOVWAY_STAT_MAXIDLE_POOL}, maxWaitMillis=\${GOVWAY_STAT_DS_BLOCKING_TIMEOUT:-30000}, defaultTransactionIsolation=READ_COMMITTED, validationQuery=\${GOVWAY_DS_VALID_CONNECTION_SQL}, validationQueryTimeout=10, testOnBorrow=true, testOnReturn=false, testWhileIdle=true, minEvictableIdleTimeMillis=300000, numTestsPerEvictionRun=10, timeBetweenEvictionRunsMillis=60000, poolPreparedStatements=true, maxOpenPreparedStatements=\${GOVWAY_STAT_DS_PSCACHESIZE:-100}, logAbandoned=true, removeAbandonedOnBorrow=\${GOVWAY_STAT_DS_REMOVEABANDONED:-false}, removeAbandonedOnMaintenance=\${GOVWAY_STAT_DS_REMOVEABANDONED:-false}, removeAbandonedTimeout=\${GOVWAY_STAT_DS_REMOVEABANDONED_TIMEOUT:-300}
+/Server/GlobalNamingResources/Resource[@name="org.govway.datasource.statistiche"]:write-attribute url=${JDBC_STAT_URL}
 EOCLI
     [ -f /tmp/__fix_aws.cli ] && /usr/local/bin/tomcat-cli.sh "/tmp/__fix_aws.cli"
     touch "${JDBC_AWS_INIT_FILE}"

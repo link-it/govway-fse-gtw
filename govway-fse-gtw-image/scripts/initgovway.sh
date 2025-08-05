@@ -77,6 +77,7 @@ do
         then
             # In caso di utilizzo di AWS RDS, il database utilizza aws-advanced-jdbc-wrapper
             JDBC_URL="jdbc:aws-wrapper:postgresql://${SERVER_HOST}:${SERVER_PORT}/${DBNAME}${QUERYSTRING}"
+            GOVWAY_READY_DB_CHECK_PGSQL_NATIVE=TRUE
         else
             JDBC_URL="jdbc:postgresql://${SERVER_HOST}:${SERVER_PORT}/${DBNAME}${QUERYSTRING}"
         fi

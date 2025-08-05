@@ -1,15 +1,16 @@
-{{- if not .Values.route.enabled -}}
-{{- $serviceName :=  . -}}
-{{- $servicePort := .Values.service.externalPort -}}
+{{- include "govway_fse_gtw.validateCloudProvider" . }}
+{{- if not (index .Values.providerConfig .Values.cloudProvider "route.enabled") }}
+{{- $serviceName :=  (include "govway_fse_gtw.fullname" . ) -}}
+{{- $servicePort := .Values.service.port -}}
 apiVersion: v1
 kind: Ingress
 metadata:
-  name: {{ include "service.fullname" . }}
+  name: {{ include "govway_fse_gtw.fullname" . }}
   labels:
-    {{- include "service.labels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-      {{ $key }}: {{ $value | quote }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
   rules:
