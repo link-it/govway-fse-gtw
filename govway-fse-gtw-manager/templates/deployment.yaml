@@ -67,10 +67,14 @@ spec:
                   name: datastore-address
                   key: govway-conf-name
             - name: "GOVWAY_DB_USER"
+              {{- if eq .Values.cloudProvider "azure" }}           
               valueFrom:
                 secretKeyRef:
                   key: app-name
                   name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
+              {{- if eq .Values.cloudProvider "aws" }}
+              value: "govway-user"
+              {{- end }}
             - name: GOVWAY_READY_DB_CHECK_SKIP
               value: "{{ .Values.govway.readyDbCheckSkip }}"
             - name: GOVWAY_DEFAULT_ENTITY_NAME
