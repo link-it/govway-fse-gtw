@@ -81,6 +81,13 @@ Create the name of the service account to use
     {{- if not .Values.secrets.iamrole }}
       {{- fail "❌ Per 'aws', 'secrets.iamrole' è obbligatorio." }}
     {{- end }}
+
+    {{- if not .Values.secrets.certificateArn }}
+      {{- fail "❌ Per 'aws', 'secrets.certificateArn' è obbligatorio." }}
+    {{- end }}
+    {{- if not .Values.secrets.truststoreArn }}
+      {{- fail "❌ Per 'aws', 'secrets.truststoreArn' è obbligatorio." }}
+    {{- end }}
   {{- end }}
 
   {{- if eq $cloudProvider "azure" }}

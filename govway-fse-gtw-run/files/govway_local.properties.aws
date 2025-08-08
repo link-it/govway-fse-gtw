@@ -1,0 +1,48 @@
+### Configurazione per reperire il certificato inoltrato da Azure negll'header
+# Mediazione tramite WebServer (Erogazioni)
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.enabled=true
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.nome=Alb-Gateway
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.autenticazioneCanale=none
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.modalita=none
+
+## Azure
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.header.ssl.certificate=X-Amzn-Mtls-Clientcert-Leaf
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.header.ssl.certificate.url_decode=true
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.header.ssl.certificate.base64_decode=false
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.header.ssl.certificate.hex_decode=false
+org.openspcoop2.pdd.services.pa.gestoreCredenziali.header.ssl.certificate.url_decode_or_base64_decode_or_hex_decode=false
+
+# Mediazione tramite WebServer (Fruizioni)
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.enabled=true
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.nome=Alb-Gateway
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.autenticazioneCanale=none
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.modalita=none
+
+## Azure
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.header.ssl.certificate=X-Amzn-Mtls-Clientcert-Leaf
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.header.ssl.certificate.url_decode=true
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.header.ssl.certificate.base64_decode=false
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.header.ssl.certificate.hex_decode=false
+org.openspcoop2.pdd.services.pd.gestoreCredenziali.header.ssl.certificate.url_decode_or_base64_decode_or_hex_decode=false
+
+# FileTrace
+#
+# Indicazione se nella funzionalità è consentito l'accesso ai contenuti
+# -- Fruizioni --
+# inRequest/outResponse
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPD.enabled=false
+# outRequest/inResponse
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPD.connettore.enabled=true
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPD.connettore.payload.enabled=false
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPD.connettore.headers.enabled=true
+# -- Erogazioni --
+# inRequest/outResponse
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPA.enabled=true
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPA.payload.enabled=false
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPA.headers.enabled=true
+# outRequest/inResponse
+org.openspcoop2.pdd.transazioni.fileTrace.dumpBinarioPA.connettore.enabled=false
+#
+# File di Configurazione
+# Il file può essere indicato con un path assoluto o relativo rispetto alla directory di configurazione
+org.openspcoop2.pdd.transazioni.fileTrace.config=govway.fileTrace.properties

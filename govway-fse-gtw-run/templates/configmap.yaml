@@ -8,8 +8,9 @@ metadata:
     helm.sh/hook-delete-policy: before-hook-creation
     helm.sh/hook-weight: "-1"
 data:
+{{- $govway_local_properties := printf "files/govway_local.properties.%s" .Values.cloudProvider }}
   govway_local.properties: |
-{{ .Files.Get "files/govway_local.properties" | indent 4 }}
+{{ .Files.Get $govway_local_properties | indent 4 }}
   ocsp.properties: |
 {{ .Files.Get "files/ocsp.properties" | indent 4 }}
   govway.fileTrace.properties: |

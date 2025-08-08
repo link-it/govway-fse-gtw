@@ -1,5 +1,5 @@
 {{- include "govway_fse_gtw.validateCloudProvider" . }}
-{{- if not (index .Values.providerConfig .Values.cloudProvider "route.enabled") }}
+{{- if not (index .Values.providerConfig .Values.cloudProvider "routeEnabled") }}
 {{- $serviceName :=  (include "govway_fse_gtw.fullname" . ) -}}
 {{- $servicePort := .Values.service.port -}}
 apiVersion: v1

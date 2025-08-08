@@ -35,17 +35,18 @@ cloudProvider: aws  # Valori supportati: aws, azure
 
 providerConfig:
   aws:
-    storageClassName: efs-sc
-    secretProviderName: "aws" ##TODO: da determinare il nome corretto
+    storageClassName: "efs-sc"
+    secretProviderName: "aws"
     secretsType: "secretsmanager"
-    route:
-      enabled: false
+    routeEnabled: false
+    serviceType: "LoadBalancer"
   azure:
     storageClassName: "azure-file-fse"
     secretProviderName: "azure"
     secretsType: "secret"
-    route:
-      enabled: true
+    routeEnabled: true
+    serviceType: "ClusterIP"
+
     
 
 

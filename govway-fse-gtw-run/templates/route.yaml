@@ -1,5 +1,5 @@
 {{- include "govway_fse_gtw.validateCloudProvider" . }}
-{{- if index .Values.providerConfig .Values.cloudProvider "route.enabled" }}
+{{- if index .Values.providerConfig .Values.cloudProvider "routeEnabled" }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:

@@ -36,14 +36,14 @@ providerConfig:
     storageClassName: efs-sc # EFS Storage Class
     secretProviderName: "aws" ##TODO: da determinare il nome corretto
     secretsType: "secretsmanager"
-    route:
-      enabled: false
+    routeEnabled: false
+    serviceType: "LoadBalancer"
   azure:
     storageClassName: "azure-file-fse"
     secretProviderName: "azure"
     secretsType: "secret"
-    route:
-      enabled: true
+    routeEnabled: true
+    serviceType: "ClusterIP"
     
 
 
@@ -106,6 +106,7 @@ secrets:
   tenantId: ""  # Azure Tenant ID
   secretKeyVaultName: ""  # The name of the secret you want to retrieve from Azure Key Vault
   iamrole: "" # The IAM role to use for IRSA authentication (AWS only)
+  certificateARN: "" # The ARN of the certificate to use for AWS ALB
 
 keystore:
   authIni: ""
