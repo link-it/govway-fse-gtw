@@ -12,6 +12,7 @@ keystore:
 truststore:
   caSalute: "tsCASalute.jks"
   authIni: "tsINI.jks"
+  
 ingress:
   hosts: 
     - gateway-fse.local
