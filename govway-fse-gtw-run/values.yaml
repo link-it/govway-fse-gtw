@@ -33,7 +33,7 @@ cloudProvider: aws  # Valori supportati: aws, azure
 
 providerConfig:
   aws:
-    storageClassName: efs-sc # EFS Storage Class
+    storageClassName: "efs" # EFS Storage Class
     secretProviderName: "aws" ##TODO: da determinare il nome corretto
     secretsType: "secretsmanager"
     routeEnabled: false
