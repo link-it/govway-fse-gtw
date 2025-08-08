@@ -14,4 +14,4 @@ truststore:
   authIni: "tsINI.jks"
 ingress:
   hosts: 
-    - macchenneso.local
+    - gateway-fse.local

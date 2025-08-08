@@ -1,5 +1,5 @@
 cloudProvider: aws
 imagePullSecrets: ["nome-secret"]
 secrets:
-  iamrole: arn:aws:iam::892250887577:role/eks-irsa
+  iamrole: arn:aws:iam::XXXXXXXXXXXX:role/eks-irsa
 

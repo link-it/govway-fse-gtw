@@ -1,7 +1,7 @@
 cloudProvider: aws
 imagePullSecrets: ["nome-secret"]
 secrets:
-  iamrole: arn:aws:iam::892250887577:role/eks-irsa
+  iamrole: arn:aws:iam::XXXXXXXXXXXX:role/eks-irsa
 #  keyvaultName: "TESTKEYVAULTNAME"
 #  tenantId: "INUTILEPERAWS"
 #  secretKeyVaultName: "TESTSECRETKEYVAULTNAME"
@@ -15,4 +15,4 @@ truststore:
   authIni: "tsINI.jks"
 ingress:
   hosts: 
-    - macchenneso.local
+    - gateway-fse.local
