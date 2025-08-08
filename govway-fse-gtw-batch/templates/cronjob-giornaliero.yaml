@@ -14,7 +14,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: {{ .Values.serviceAccountName | default (include "service.serviceAccountName" .) }}
+          serviceAccountName: {{ .Values.serviceAccountName | default (include "govway_fse_gtw.serviceAccountName" .) }}
           containers:
           - name: {{ include "govway_fse_gtw.fullname" . }}-statistiche-giornaliere
             image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_batch" .Chart.AppVersion) }}"
