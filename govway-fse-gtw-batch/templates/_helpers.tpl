@@ -65,6 +65,11 @@ Create the name of the service account to use
   Validazione globale cloudProvider e regole specifiche per provider
 */}}
 {{- define "govway_fse_gtw.validateCloudProvider" -}}
+
+  {{- if not .Values.govway.entityName }}
+    {{- fail "❌ La varibile govway.entityName è obbligatoria." }}
+  {{- end }}
+  
   {{- $cloudProvider := required "❌ .Values.cloudProvider è obbligatorio!" .Values.cloudProvider }}
   {{- $supportedProviders := list "aws" "azure" "gcp" }}
   {{- if not (has $cloudProvider $supportedProviders) }}

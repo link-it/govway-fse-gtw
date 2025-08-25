@@ -16,3 +16,7 @@ truststore:
 ingress:
   hosts: 
     - gateway-fse.local
+
+# Inserire Il nome del soggetto da utilizzare
+govway:
+  entityName: sogei

@@ -71,7 +71,7 @@ spec:
             - name: GOVWAY_READY_DB_CHECK_SKIP
               value: "{{ .Values.govway.readyDbCheckSkip }}"
             - name: GOVWAY_DEFAULT_ENTITY_NAME
-              value: {{ .Values.govway.defaultEntityName }}
+              value: {{ .Values.govway.entityName }}
             - name: GOVWAY_DS_JDBC_LIBS
               value: "{{ .Values.jdbcLibs }}/{{ .Values.cloudProvider }}"
             - name: FSE_CLOUD_PROVIDER

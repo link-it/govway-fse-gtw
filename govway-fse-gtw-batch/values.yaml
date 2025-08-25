@@ -6,7 +6,7 @@ replicaCount: 1
 govway:
   popDbSkip: FALSE
   readyDbCheckSkip: TRUE
-  defaultEntityName: "SOGEI"
+  #entityName: 
   #jdbcPath: "/mnt/jars"
   serviceName: "GovWay-Batch"
   loggingLevel: "Trace"

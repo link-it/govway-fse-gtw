@@ -65,7 +65,7 @@ spec:
               - name: GOVWAY_READY_DB_CHECK_SKIP
                 value: "{{ .Values.govway.readyDbCheckSkip }}"
               - name: GOVWAY_DEFAULT_ENTITY_NAME
-                value: {{ .Values.govway.defaultEntityName }}
+                value: {{ .Values.govway.entityName }}
               - name: GOVWAY_DS_JDBC_LIBS
                 value: "{{ .Values.jdbcLibs }}/{{ .Values.cloudProvider }}"
               - name: FSE_CLOUD_PROVIDER
@@ -86,6 +86,15 @@ spec:
               - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
                 mountPath: "/mnt/secrets-store"
                 readOnly: true]
+          volumes:
+            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
+              csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: {{ include "govway_fse_gtw.fullname" . }}-azure-keyvault-secrets  # Reference the dynamically generated SecretProviderClass
+                nodePublishSecretRef:
+                  name: {{ required "A valid .Values.secrets.secretKeyVaultName entry required!" (index (.Values.secrets) "secretKeyVaultName") }}
             {{ else if eq .Values.cloudProvider "aws" }}
               - name: AWS_LOG_LEVEL
                 value: {{ .Values.govway.logLevel }}
@@ -95,17 +104,6 @@ spec:
           imagePullSecrets:
           {{- toYaml . | nindent 12 }}
           {{- end }}
-          volumes:
-            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
-              csi:
-                driver: secrets-store.csi.k8s.io
-                readOnly: true
-                volumeAttributes:
-                  secretProviderClass: {{ include "govway_fse_gtw.fullname" . }}-azure-keyvault-secrets  # Reference the dynamically generated SecretProviderClass
-                {{- if eq .Values.cloudProvider "azure" }}
-                nodePublishSecretRef:
-                  name: {{ required "A valid .Values.secrets.secretKeyVaultName entry required!" (index (.Values.secrets) "secretKeyVaultName") }}
-                {{- end }}
           {{- with .Values.nodeSelector }}
           nodeSelector:
             {{- toYaml . | nindent 10 }}
