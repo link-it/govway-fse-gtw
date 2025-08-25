@@ -121,9 +121,11 @@ spec:
           volumeMounts:
             - mountPath: /etc/govway
               name: govway-fse-gtw-manager-cm-volume
+            {{- if eq .Values.cloudProvider "azure" }}
             - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
               mountPath: "/mnt/secrets-store"
               readOnly: true
+            {{- end }}
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -132,16 +134,16 @@ spec:
             defaultMode: 420
             name: {{ include "govway_fse_gtw.fullname" . }}-cm 
           name: govway-fse-gtw-manager-cm-volume
+        {{- if eq .Values.cloudProvider "azure" }}
         - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ include "govway_fse_gtw.fullname" . }}-{{ .Values.cloudProvider }}-keyvault-secrets  # Reference the dynamically generated SecretProviderClass
-            {{- if eq .Values.cloudProvider "azure" }}
+              secretProviderClass: {{ include "govway_fse_gtw.fullname" . }}-{{ .Values.cloudProvider }}-keyvault-secrets
             nodePublishSecretRef:
               name: {{ required "A valid .Values.secrets.secretKeyVaultName entry required!" (index (.Values.secrets) "secretKeyVaultName") }}
-            {{- end }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

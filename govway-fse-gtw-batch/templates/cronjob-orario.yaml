@@ -22,76 +22,74 @@ spec:
             args:
             - orarie
             env:
-            - name: "GOVWAY_DS_CONN_PARAM"
-              valueFrom:
-                configMapKeyRef:
-                  name: datastore-address
-                  key: govway-db-conn-param
-            - name: "GOVWAY_STAT_DS_CONN_PARAM"
-              valueFrom:
-                configMapKeyRef:
-                  name: datastore-address
-                  key: govway-db-conn-param
-            - name: "GOVWAY_STAT_DB_SERVER"
-              valueFrom:
-                configMapKeyRef:
-                  name: datastore-address
-                  key: govway-db-address
-            - name: "GOVWAY_TRAC_DB_NAME"
-              valueFrom:
-                configMapKeyRef:
-                  name: datastore-address
-                  key: govway-trace-name
-            - name: "GOVWAY_STAT_DB_NAME"
-              valueFrom:
-                configMapKeyRef:
-                  name: datastore-address
-                  key: govway-stats-name
-            - name: "GOVWAY_CONF_DB_NAME"
-              valueFrom:
-                configMapKeyRef:
-                  name: datastore-address
-                  key: govway-conf-name
-          
-            - name: "GOVWAY_STAT_DB_USER"
-              {{- if eq .Values.cloudProvider "azure" }}           
-              valueFrom:
-                secretKeyRef:
-                  key: app-name
-                  name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
-              {{- if eq .Values.cloudProvider "aws" }}
-              value: "govway-user"
-              {{- end }}
-            - name: GOVWAY_READY_DB_CHECK_SKIP
-              value: "{{ .Values.govway.readyDbCheckSkip }}"
-            - name: GOVWAY_DEFAULT_ENTITY_NAME
-              value: {{ .Values.govway.defaultEntityName }}
-            - name: GOVWAY_DS_JDBC_LIBS
-              value: "{{ .Values.jdbcLibs }}/{{ .Values.cloudProvider }}"
-            - name: FSE_CLOUD_PROVIDER
-              value: {{ .Values.cloudProvider | quote }}
-            {{- if eq .Values.cloudProvider "azure" }}
-            - name: AZURE_LOG_LEVEL
-              value: {{ .Values.govway.logLevel }}
-            - name: "AZURE_TENANT_ID"
-              value: {{ .Values.secrets.tenantId | quote }}
-            - name: "AZURE_CLIENT_ID"
-              valueFrom:
-                secretKeyRef:
-                  key: app-id-{{ include "govway_fse_gtw.fullname" . }}
-                  name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
-            - name: "AZURE_CLIENT_CERTIFICATE_PATH"
-              value: "/mnt/secrets-store/app-cert"
-            {{ else if eq .Values.cloudProvider "aws" }}
-            - name: AWS_LOG_LEVEL
-              value: {{ .Values.govway.logLevel }}
-            - name: "AWS_CLIENT_CERTIFICATE_PATH"
-              value: "/mnt/secrets-store/app-cert"
-            {{- end }}
+              - name: "GOVWAY_DS_CONN_PARAM"
+                valueFrom:
+                  configMapKeyRef:
+                    name: datastore-address
+                    key: govway-db-conn-param
+              - name: "GOVWAY_STAT_DS_CONN_PARAM"
+                valueFrom:
+                  configMapKeyRef:
+                    name: datastore-address
+                    key: govway-db-conn-param
+              - name: "GOVWAY_STAT_DB_SERVER"
+                valueFrom:
+                  configMapKeyRef:
+                    name: datastore-address
+                    key: govway-db-address
+              - name: "GOVWAY_TRAC_DB_NAME"
+                valueFrom:
+                  configMapKeyRef:
+                    name: datastore-address
+                    key: govway-trace-name
+              - name: "GOVWAY_STAT_DB_NAME"
+                valueFrom:
+                  configMapKeyRef:
+                    name: datastore-address
+                    key: govway-stats-name
+              - name: "GOVWAY_CONF_DB_NAME"
+                valueFrom:
+                  configMapKeyRef:
+                    name: datastore-address
+                    key: govway-conf-name
+            
+              - name: "GOVWAY_STAT_DB_USER"
+                {{- if eq .Values.cloudProvider "azure" }}           
+                valueFrom:
+                  secretKeyRef:
+                    key: app-name
+                    name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
+                {{- else if eq .Values.cloudProvider "aws" }}
+                value: "govway-user"
+                {{- end }}
+              - name: GOVWAY_READY_DB_CHECK_SKIP
+                value: "{{ .Values.govway.readyDbCheckSkip }}"
+              - name: GOVWAY_DEFAULT_ENTITY_NAME
+                value: {{ .Values.govway.defaultEntityName }}
+              - name: GOVWAY_DS_JDBC_LIBS
+                value: "{{ .Values.jdbcLibs }}/{{ .Values.cloudProvider }}"
+              - name: FSE_CLOUD_PROVIDER
+                value: {{ .Values.cloudProvider | quote }}
+              {{- if eq .Values.cloudProvider "azure" }}
+              - name: AZURE_LOG_LEVEL
+                value: {{ .Values.govway.logLevel }}
+              - name: "AZURE_TENANT_ID"
+                value: {{ .Values.secrets.tenantId | quote }}
+              - name: "AZURE_CLIENT_ID"
+                valueFrom:
+                  secretKeyRef:
+                    key: app-id-{{ include "govway_fse_gtw.fullname" . }}
+                    name: {{ include "govway_fse_gtw.fullname" . }}-gtw-secrets
+              - name: "AZURE_CLIENT_CERTIFICATE_PATH"
+                value: "/mnt/secrets-store/app-cert"
             volumeMounts:
-            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
+              - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-store
+                mountPath: "/mnt/secrets-store"
+                readOnly: true]
+            {{ else if eq .Values.cloudProvider "aws" }}
+              - name: AWS_LOG_LEVEL
+                value: {{ .Values.govway.logLevel }}
+            {{- end }}
           restartPolicy: OnFailure
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:

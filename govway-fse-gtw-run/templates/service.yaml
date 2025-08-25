@@ -25,8 +25,8 @@ spec:
   externalTrafficPolicy: Cluster
   internalTrafficPolicy: Cluster
   ports:
-    {{- /* Genero un numero casuale compreso tra 20000 e 30000 da utilizzare come nodeport */ -}}  
-    {{- $randomNodePort := add (mod (randNumeric 5 | atoi) 10000) 20000 }}
+    {{- /* Genero un numero casuale compreso tra 30000 e 32767 da utilizzare come nodeport */ -}}  
+    {{- $randomNodePort := add (mod (randNumeric 4 | atoi) 2768) 30000 }}
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
       protocol: {{ .Values.service.protocol }}
