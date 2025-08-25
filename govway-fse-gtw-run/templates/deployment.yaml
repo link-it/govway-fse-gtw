@@ -60,7 +60,7 @@ spec:
                   name: datastore-address
                   key: govway-conf-name
             - name: "GOVWAY_DB_USER"
-              {{- if eq .Values.cloudProvider "azure" }}           
+              {{- if eq .Values.cloudProvider "azure" }}
               valueFrom:
                 secretKeyRef:
                   key: app-name
@@ -121,23 +121,11 @@ spec:
               readOnly: true
 
             - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-volume
-              mountPath: "/etc/govway/{{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}"
-              readOnly: true
-              subPath: {{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}
+              mountPath: "/etc/govway/keystore"
 
-            - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-volume
-              mountPath: "/etc/govway/{{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}"
-              readOnly: true
-              subPath: {{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}
 
             - name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
-              mountPath: "/etc/govway/{{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}"
-              subPath: {{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}
-
-            - name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
-              mountPath: "/etc/govway/{{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}"
-              readOnly: true
-              subPath: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
+              mountPath: "/etc/govway/truststore"
               
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
@@ -156,7 +144,7 @@ spec:
               - key: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
                 path: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
             name: govway-truststore-cm
-          
+
         - name: govway-fse-gtw-run-cm-volume
           configMap:
             defaultMode: 420
