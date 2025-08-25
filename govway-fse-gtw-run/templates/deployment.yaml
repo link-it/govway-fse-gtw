@@ -121,21 +121,21 @@ spec:
               readOnly: true
 
             - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-volume
-              mountPath: "/etc/govway/keystore/{{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}"
+              mountPath: "/etc/govway/{{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.keystore.authIni entry required, like A1GTW-INI.pfx" (index (.Values.keystore) "authIni") }}
 
             - name: {{ include "govway_fse_gtw.fullname" . }}-secrets-volume
-              mountPath: "/etc/govway/keystore/{{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}"
+              mountPath: "/etc/govway/{{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.keystore.authCentralizzato entry required, like auth-centralized-services.pfx" (index (.Values.keystore) "authCentralizzato") }}
 
             - name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
-              mountPath: "/etc/govway/truststore/{{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}"
+              mountPath: "/etc/govway/{{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}"
               subPath: {{ required "A valid filename .Values.truststore.caSalute entry required, like tsCASalute.jks" (index (.Values.truststore) "caSalute") }}
 
             - name: {{ include "govway_fse_gtw.fullname" . }}-truststore-volume
-              mountPath: "/etc/govway/truststore/{{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}"
+              mountPath: "/etc/govway/{{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}"
               readOnly: true
               subPath: {{ required "A valid filename .Values.truststore.authIni entry required, like tsINI.jks" (index (.Values.truststore) "authIni") }}
               
