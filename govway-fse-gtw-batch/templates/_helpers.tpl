@@ -9,17 +9,17 @@ Expand the name of the chart.
 Create a default fully qualified app name.
 We truncate at 50 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
-Su AWS il nome del job non può superare i 52 caratteri, quindi per sicurezza limitiamo a 50.
+Su AWS il nome del job non può superare i 52 caratteri. limito a 44 a cui vanno inclusi 7 caratter si postfisso del nome.
 */}}
 {{- define "govway_fse_gtw.fullname" -}}
 {{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 50 | trimSuffix "-" }}
+{{- .Values.fullnameOverride | trunc 44 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 50 | trimSuffix "-" }}
+{{- .Release.Name | trunc 44 | trimSuffix "-" }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 50 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name | trunc 44 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 {{- end }}
