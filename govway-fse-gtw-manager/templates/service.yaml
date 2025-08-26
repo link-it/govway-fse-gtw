@@ -10,20 +10,11 @@ metadata:
     {{- with .Values.service.annotations }}
     {{- toYaml . | nindent 4 }}  
     {{- end }}
-    {{- if eq .Values.cloudProvider "aws" }}
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
-    service.beta.kubernetes.io/aws-load-balancer-type: external
-    {{- end }}
+
 {{- end }}
 spec:
   type: {{ index .Values.providerConfig .Values.cloudProvider "serviceType" | default .Values.service.type }}
   {{- if eq .Values.cloudProvider "aws" }}
-  loadBalancerClass: service.k8s.aws/nlb
-  allocateLoadBalancerNodePorts: true
-  externalTrafficPolicy: Cluster
-  internalTrafficPolicy: Cluster
   ports:
     {{- /* Genero un numero casuale compreso tra 30000 e 32767 da utilizzare come nodeport */ -}}  
     {{- $randomNodePort := add (mod (randNumeric 4 | atoi) 2768) 30000 }}
