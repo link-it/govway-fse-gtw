@@ -39,7 +39,7 @@ providerConfig:
     secretProviderName: "aws"
     secretsType: "secretsmanager"
     routeEnabled: false
-    serviceType: "LoadBalancer"
+    serviceType: "NodePort"
   azure:
     storageClassName: "azure-file-fse"
     secretProviderName: "azure"
