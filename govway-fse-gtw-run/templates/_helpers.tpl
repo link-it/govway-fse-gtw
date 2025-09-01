@@ -83,8 +83,14 @@ Create the name of the service account to use
       {{- end }}
     {{- end }}
 
-    {{- if not .Values.secrets.iamrole }}
-      {{- fail "❌ Per 'aws', 'secrets.iamrole' è obbligatorio." }}
+    {{- $iam := default "" .Values.secrets.iamrole }}
+    {{- $sa  := default "" .Values.serviceAccountName }}
+    {{- if and (empty $iam) (empty $sa) }}
+      {{- fail "❌ Per 'aws', imposta almeno uno tra 'secrets.iamrole' o 'serviceAccountName'." }}
+    {{- end }}
+
+    {{- if and (not (empty $iam)) (not (empty $sa)) }}
+      {{- fail "❌ Configurazione ambigua: imposta solo uno tra 'secrets.iamrole' e 'serviceAccountName'." }}
     {{- end }}
 
     {{- if not .Values.secrets.certificateArn }}
@@ -93,12 +99,12 @@ Create the name of the service account to use
     {{- if not .Values.secrets.truststoreArn }}
       {{- fail "❌ Per 'aws', 'secrets.truststoreArn' è obbligatorio." }}
     {{- end }}
-  {{- end }}
 
-  {{- if eq $cloudProvider "azure" }}
+  {{- else  if eq $cloudProvider "azure" }}
     {{- if not .Values.secrets.tenantId }}
       {{- fail "❌ Per 'azure', 'secrets.tenantId' è obbligatorio." }}
     {{- end }}
   {{- end }}
+  
 {{- end }}
 
