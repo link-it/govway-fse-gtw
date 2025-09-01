@@ -10,12 +10,6 @@ metadata:
     {{- with .Values.service.annotations }}
     {{- toYaml . | nindent 4 }}  
     {{- end }}
-    {{- if eq .Values.cloudProvider "aws" }}
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
-    service.beta.kubernetes.io/aws-load-balancer-type: external
-    {{- end }}
 {{- end }}
 spec:
   type: {{ index .Values.providerConfig .Values.cloudProvider "serviceType" | default .Values.service.type }}
