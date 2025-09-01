@@ -20,10 +20,6 @@ metadata:
 spec:
   type: {{ index .Values.providerConfig .Values.cloudProvider "serviceType" | default .Values.service.type }}
   {{- if eq .Values.cloudProvider "aws" }}
-  loadBalancerClass: service.k8s.aws/nlb
-  allocateLoadBalancerNodePorts: true
-  externalTrafficPolicy: Cluster
-  internalTrafficPolicy: Cluster
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
