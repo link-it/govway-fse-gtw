@@ -22,7 +22,11 @@ metadata:
         {"port": 443, "mode": "verify", "trustStore": {{ .Values.secrets.truststoreArn | quote }} }
       ]
     alb.ingress.kubernetes.io/scheme: internal
-    alb.ingress.kubernetes.io/target-type: "instance" 
+    alb.ingress.kubernetes.io/target-type: "instance"
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /govway/check
+    alb.ingress.kubernetes.io/success-codes: 200-210
     {{- end }}
 {{- end }}
 spec:

@@ -21,6 +21,10 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internal
     alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /govwayConsole
+    alb.ingress.kubernetes.io/success-codes: 200-310
     {{- end }}
 {{- end }}
 spec:
@@ -31,7 +35,7 @@ spec:
     - host: {{ .Values.ingress.monitor_host }}
       http:
         paths:
-          - path: /*
+          - path: /govwayMonitor/*
             pathType: ImplementationSpecific
             backend:
               service:
@@ -42,7 +46,7 @@ spec:
     - host: {{ .Values.ingress.config_host }}
       http:
         paths:
-          - path: /*
+          - path: /govwayConsole/*
             pathType: ImplementationSpecific
             backend:
               service:
