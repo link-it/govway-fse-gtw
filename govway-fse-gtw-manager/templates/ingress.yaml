@@ -31,7 +31,7 @@ spec:
     - host: {{ .Values.ingress.monitor_host }}
       http:
         paths:
-          - path: /govwayMonitor
+          - path: /govwayMonitor/*
             pathType: ImplementationSpecific
             backend:
               service:
@@ -42,7 +42,7 @@ spec:
     - host: {{ .Values.ingress.config_host }}
       http:
         paths:
-          - path: /govwayConsole
+          - path: /govwayConsole/*
             pathType: ImplementationSpecific
             backend:
               service:

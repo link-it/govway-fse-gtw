@@ -34,7 +34,7 @@ spec:
     - host: {{ $host }}
       http:
         paths:
-          - path: /govway/rest/in/
+          - path: /govway/rest/in/*
             pathType: ImplementationSpecific
             backend:
               service:
