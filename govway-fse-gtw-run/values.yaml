@@ -37,7 +37,7 @@ providerConfig:
     secretProviderName: "aws" ##TODO: da determinare il nome corretto
     secretsType: "secretsmanager"
     routeEnabled: false
-    serviceType: "LoadBalancer"
+    serviceType: "NodePort"
   azure:
     storageClassName: "azure-file-fse"
     secretProviderName: "azure"
@@ -79,15 +79,10 @@ service:
 
 
 ingress:
- className: ""
  annotations: {}
    # kubernetes.io/ingress.class: nginx
    # kubernetes.io/tls-acme: "true"
  hosts: []
- tls: []
- #  - secretName: chart-example-tls
- #    hosts:
- #      - chart-example.local
 
 containers:
   livenessProbe:

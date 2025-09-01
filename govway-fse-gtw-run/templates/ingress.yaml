@@ -14,18 +14,13 @@ metadata:
     {{- toYaml . | nindent 4 }}  
     {{- end }}
     {{- if eq .Values.cloudProvider "aws" }}
-    alb.ingress.kubernetes.io/action.ssl-redirect: |
-      {"Type": "redirect", "RedirectConfig": {"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.secrets.certificateArn | quote }}
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/mutual-authentication: |
       [
-        {"port": 80, "mode": "passthrough"},
         {"port": 443, "mode": "verify", "trustStore": {{ .Values.secrets.truststoreArn | quote }} }
       ]
-    #alb.ingress.kubernetes.io/mutual-authentication-mode: "verify"
-    #alb.ingress.kubernetes.io/mutual-authentication-truststore: {{ .Values.secrets.truststoreArn | quote }}
+    alb.ingress.kubernetes.io/scheme: internal
     alb.ingress.kubernetes.io/target-type: "instance" 
     {{- end }}
 {{- end }}
@@ -39,13 +34,16 @@ spec:
       http:
         paths:
           - path: /govway/rest/in/
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
-    {{- end -}}
-  {{- if .Values.ingress.tls }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+    {{- end }}
   tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-  {{- end -}}
-{{- end -}}
+    - hosts:
+        {{- range $host := .Values.ingress.hosts }}
+        - {{ $host }}
+        {{- end }}
+{{- end }}

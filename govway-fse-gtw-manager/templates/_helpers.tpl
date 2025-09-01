@@ -65,7 +65,7 @@ Create the name of the service account to use
   {{- if not .Values.govway.entityName }}
     {{- fail "❌ La varibile govway.entityName è obbligatoria." }}
   {{- end }}
-  
+
   {{- $cloudProvider := required "❌ .Values.cloudProvider è obbligatorio!" .Values.cloudProvider }}
   {{- $supportedProviders := list "aws" "azure" "gcp" }}
   {{- if not (has $cloudProvider $supportedProviders) }}
@@ -73,21 +73,33 @@ Create the name of the service account to use
   {{- end }}
 
   {{- if eq $cloudProvider "aws" }}
-    {{- $hosts := .Values.ingress.hosts | default list }}
-    {{- if or (not $hosts) (eq (len $hosts) 0) }}
-      {{- fail "❌ Per 'aws', 'ingress.hosts' deve essere definito e contenere almeno un host." }}
+    {{- $confighosts := .Values.ingress.config_host }}
+    {{- if empty $confighosts }}
+      {{- fail "❌ Per 'aws', 'ingress.config_host' deve essere definito e contenere almeno un host." }}
     {{- end }}
-    {{- range $i, $host := $hosts }}
-      {{- if not (kindIs "string" $host) }}
-        {{- fail (printf "❌ 'ingress.hosts[%d]' deve essere una stringa." $i) }}
-      {{- end }}
+    {{- if not (kindIs "string" $confighosts) }}
+      {{- fail (printf "❌ 'ingress.config_host' deve essere una stringa.") }}
     {{- end }}
+
+    {{- $monitorhosts := .Values.ingress.monitor_host  }}
+    {{- if or (not $monitorhosts) (eq (len $monitorhosts) 0) }}
+      {{- fail "❌ Per 'aws', 'ingress.monitor_host' deve essere definito e contenere almeno un host." }}
+    {{- end }}
+    {{- if not (kindIs "string" $monitorhosts) }}
+      {{- fail (printf "❌ 'ingress.monitor_host' deve essere una stringa.") }}
+    {{- end }}
+
+
 
     {{- if not .Values.secrets.iamrole }}
       {{- fail "❌ Per 'aws', 'secrets.iamrole' è obbligatorio." }}
     {{- end }}
   {{- end }}
 
+  {{- if not .Values.secrets.certificateArn }}
+    {{- fail "❌ Per 'aws', 'secrets.certificateArn' è obbligatorio." }}
+  {{- end }}
+  
   {{- if eq $cloudProvider "azure" }}
     {{- if not .Values.secrets.tenantId }}
       {{- fail "❌ Per 'azure', 'secrets.tenantId' è obbligatorio." }}

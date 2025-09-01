@@ -38,7 +38,7 @@ spec:
                   name: network-address
                   key: govway-service-address
             - name: "RUN_SERVICE"
-              value: {{ .Values.govway.runService | default "govway-fse-gtw-run" }}
+              value: {{ .Values.govway.runService | default "govway-fse-gtw-run" | quote}}
             - name: GOVWAY_POP_DB_SKIP
               value: "{{ .Values.govway.popDbSkip }}"
             - name: "GOVWAY_DS_CONN_PARAM"
@@ -98,8 +98,6 @@ spec:
             {{ else if eq .Values.cloudProvider "aws" }}
             - name: AWS_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}
-            - name: "AWS_CLIENT_CERTIFICATE_PATH"
-              value: "/mnt/secrets-store/app-cert"
             {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

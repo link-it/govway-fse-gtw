@@ -13,7 +13,7 @@ govway:
   serviceName: "GovWay-Manager"
   loggingLevel: "Trace"
   logLevel: "error"
-  runService: ""
+  runService: "it-fse-gtw-govway-run"
   
 image:
   registry:
