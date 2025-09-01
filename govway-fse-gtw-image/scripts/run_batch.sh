@@ -1,3 +1,5 @@
+#!/bin/bash
+
 exec 6<> /tmp/run_batch.log
 exec 2>&6
 set -x
