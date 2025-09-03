@@ -1,0 +1,10 @@
+cloudProvider: azure
+imagePullSecrets: ["nome-secret"]
+secrets:
+  keyvaultName: "TESTKEYVAULTNAME"
+  tenantId: "INUTILEPERAWS"
+  secretKeyVaultName: "TESTSECRETKEYVAULTNAME"
+
+# Inserire Il nome del soggetto da utilizzare
+govway:
+  entityName: sogei

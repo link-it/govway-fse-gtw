@@ -1,0 +1,61 @@
+{{- include "govway_fse_gtw.validateCloudProvider" . }}
+{{- if not (index .Values.providerConfig .Values.cloudProvider "routeEnabled") }}
+{{- $serviceName :=  "it-fse-gtw-govway-manager" -}}
+{{- $servicePort := .Values.service.port -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "govway_fse_gtw.fullname" . }}
+  labels:
+    {{- include "govway_fse_gtw.labels" . | nindent 4 }}
+{{- if or .Values.service.annotations (eq .Values.cloudProvider "aws") }}
+  annotations:
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}  
+    {{- end }}
+    {{- if eq .Values.cloudProvider "aws" }}
+    alb.ingress.kubernetes.io/load-balancer-name: k8s-govway-manager-alb
+    alb.ingress.kubernetes.io/actions.ssl-redirect: |
+      {"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301" }
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.secrets.certificateArn | quote }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /govwayConsole
+    alb.ingress.kubernetes.io/success-codes: 200-310
+    {{- end }}
+{{- end }}
+spec:
+{{- if eq .Values.cloudProvider "aws" }}
+  ingressClassName: alb
+{{- end }}
+  rules:
+    - host: {{ .Values.ingress.monitor_host }}
+      http:
+        paths:
+          - path: /govwayMonitor/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+
+    - host: {{ .Values.ingress.config_host }}
+      http:
+        paths:
+          - path: /govwayConsole/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+
+  tls:
+    - hosts:
+      - {{ .Values.ingress.monitor_host }}
+      - {{ .Values.ingress.config_host }}
+{{- end }}

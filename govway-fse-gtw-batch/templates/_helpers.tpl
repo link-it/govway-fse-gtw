@@ -1,24 +1,25 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "it-fse-gtw-govway-batch.name" -}}
+{{- define "govway_fse_gtw.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+We truncate at 50 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
+Su AWS il nome del job non può superare i 52 caratteri. limito a 44 a cui vanno inclusi 7 caratter si postfisso del nome.
 */}}
-{{- define "it-fse-gtw-govway-batch.fullname" -}}
+{{- define "govway_fse_gtw.fullname" -}}
 {{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Values.fullnameOverride | trunc 44 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- .Release.Name | trunc 44 | trimSuffix "-" }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name | trunc 44 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -26,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "it-fse-gtw-govway-batch.chart" -}}
+{{- define "govway_fse_gtw.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "it-fse-gtw-govway-batch.labels" -}}
-helm.sh/chart: {{ include "it-fse-gtw-govway-batch.chart" . }}
-{{ include "it-fse-gtw-govway-batch.selectorLabels" . }}
+{{- define "govway_fse_gtw.labels" -}}
+helm.sh/chart: {{ include "govway_fse_gtw.chart" . }}
+{{ include "govway_fse_gtw.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,18 +46,54 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "it-fse-gtw-govway-batch.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "it-fse-gtw-govway-batch.name" . }}
+{{- define "govway_fse_gtw.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "govway_fse_gtw.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "it-fse-gtw-govway-batch.serviceAccountName" -}}
+{{- define "govway_fse_gtw.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "it-fse-gtw-govway-batch.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "govway_fse_gtw.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/* 
+  Validazione globale cloudProvider e regole specifiche per provider
+*/}}
+{{- define "govway_fse_gtw.validateCloudProvider" -}}
+
+  {{- if not .Values.govway.entityName }}
+    {{- fail "❌ La varibile govway.entityName è obbligatoria." }}
+  {{- end }}
+  
+  {{- $cloudProvider := required "❌ .Values.cloudProvider è obbligatorio!" .Values.cloudProvider }}
+  {{- $supportedProviders := list "aws" "azure" "gcp" }}
+  {{- if not (has $cloudProvider $supportedProviders) }}
+    {{- fail (printf "❌ Valore cloudProvider '%s' non supportato. Usa uno tra: %s" $cloudProvider (join ", " $supportedProviders)) }}
+  {{- end }}
+
+  {{- if eq $cloudProvider "aws" }}
+
+    {{- $iam := default "" .Values.secrets.iamrole }}
+    {{- $sa  := default "" .Values.serviceAccountName }}
+    {{- if and (empty $iam) (empty $sa) }}
+      {{- fail "❌ Per 'aws', imposta almeno uno tra 'secrets.iamrole' o 'serviceAccountName'." }}
+    {{- end }}
+
+    {{- if and (not (empty $iam)) (not (empty $sa)) }}
+      {{- fail "❌ Configurazione ambigua: imposta solo uno tra 'secrets.iamrole' e 'serviceAccountName'." }}
+    {{- end }}
+
+  {{- else if eq $cloudProvider "azure" }}
+    {{- if not .Values.secrets.tenantId }}
+      {{- fail "❌ Per 'azure', 'secrets.tenantId' è obbligatorio." }}
+    {{- end }}
+  {{- end }}
+
+{{- end }}
+

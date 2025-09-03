@@ -1,9 +1,18 @@
-# Default values for it-fse-gtw-govway-batch.
+# Default values for govway-fse-gtw-batch.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+govway:
+  popDbSkip: FALSE
+  readyDbCheckSkip: TRUE
+  #entityName: 
+  #jdbcPath: "/mnt/jars"
+  serviceName: "GovWay-Batch"
+  loggingLevel: "Trace"
+  logLevel: "error"
 
+  
 image:
   registry:
     urlGovWay: "linkitaly"
@@ -16,21 +25,28 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-govway:
-  popDbSkip: FALSE
-  readyDbCheckSkip: TRUE
-  defaultEntityName: "SOGEI"
-  opentelemetryType: "Azure"
-  #jdbcPath: "/mnt/jars"
-  serviceName: "GovWay-Batch"
-  loggingLevel: "Trace"
-  logLevel: "error"
+
+jdbcLibs: "/jdbclibs"
+
+cloudProvider: aws  # Valori supportati: aws, azure
+
+providerConfig:
+  aws:
+    storageClassName: efs-sc
+    secretProviderName: "aws" ##TODO: da determinare il nome corretto
+    secretsType: "secretsmanager"
+    route:
+      enabled: false
+  azure:
+    storageClassName: "azure-file-fse"
+    secretProviderName: "azure"
+    secretsType: "secret"
+    route:
+      enabled: true
+    
 
 
-cloud:
-  provider: "azure"
-  jdbcLibs: "/jdbclibs"
-
+serviceAccountName:
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -57,6 +73,7 @@ secrets:
   keyvaultName: ""  # <Your-KeyVault-Name> Insert the name of your Azure Key Vault
   tenantId: ""  # Azure Tenant ID
   secretKeyVaultName: ""  # The name of the secret you want to retrieve from Azure Key Vault
+  iamrole: "" # The IAM role to use for IRSA authentication (AWS only)
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

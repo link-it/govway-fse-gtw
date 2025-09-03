@@ -1,0 +1,8 @@
+cloudProvider: aws
+imagePullSecrets: ["nome-secret"]
+secrets:
+  iamrole: arn:aws:iam::XXXXXXXXXXXX:role/eks-irsa
+
+# Inserire Il nome del soggetto da utilizzare
+govway:
+  entityName: sogei

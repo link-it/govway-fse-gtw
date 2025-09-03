@@ -1,17 +1,31 @@
+{{- include "govway_fse_gtw.validateCloudProvider" . }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "service.fullname" . }}
+  name: it-fse-gtw-govway-manager  
   labels:
-    {{- include "service.labels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.labels" . | nindent 4 }}
+{{- if or .Values.service.annotations (eq .Values.cloudProvider "aws") }}
+  annotations:
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}  
+    {{- end }}
+
+{{- end }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ index .Values.providerConfig .Values.cloudProvider "serviceType" | default .Values.service.type }}
+  {{- if eq .Values.cloudProvider "aws" }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: {{ .Values.service.protocol }}
+  {{- else }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
       protocol: {{ .Values.service.protocol }}
       name: {{ .Values.service.port }}-{{ .Values.service.protocol | lower }}
+  {{- end }}
   selector:
-    {{- include "service.selectorLabels" . | nindent 4 }}
+    {{- include "govway_fse_gtw.selectorLabels" . | nindent 4 }}
   sessionAffinity: None
-  type: ClusterIP

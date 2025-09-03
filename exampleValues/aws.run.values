@@ -1,0 +1,22 @@
+cloudProvider: aws
+imagePullSecrets: ["nome-secret"]
+secrets:
+  iamrole: arn:aws:iam::XXXXXXXXXXXX:role/eks-irsa
+  certificateArn: arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxx
+  truststoreArn: aws:elasticloadbalancing:trustStoreArn
+
+keystore:
+  authIni: "A1GTW-INI.pfx"
+  authCentralizzato: "auth-centralized-services.pfx" 
+
+truststore:
+  caSalute: "tsCASalute.jks"
+  authIni: "tsINI.jks"
+  
+ingress:
+  hosts: 
+    - gateway-fse.local
+
+# Inserire Il nome del soggetto da utilizzare
+govway:
+  entityName: sogei

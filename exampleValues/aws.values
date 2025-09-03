@@ -1,0 +1,18 @@
+cloudProvider: aws
+imagePullSecrets: ["nome-secret"]
+secrets:
+  iamrole: arn:aws:iam::XXXXXXXXXXXX:role/eks-irsa
+#  keyvaultName: "TESTKEYVAULTNAME"
+#  tenantId: "INUTILEPERAWS"
+#  secretKeyVaultName: "TESTSECRETKEYVAULTNAME"
+
+keystore:
+  authIni: "A1GTW-INI.pfx"
+  authCentralizzato: "auth-centralized-services.pfx" 
+
+truststore:
+  caSalute: "tsCASalute.jks"
+  authIni: "tsINI.jks"
+ingress:
+  hosts: 
+    - gateway-fse.local

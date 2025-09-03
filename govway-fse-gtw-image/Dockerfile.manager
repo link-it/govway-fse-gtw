@@ -1,5 +1,16 @@
 FROM linkitaly/govway:3.3.16.p1_manager_postgres
+
+USER root
+COPY scripts/entrypoint.sh scripts/initgovway.sh /usr/local/bin/
+
+RUN  chown -R tomcat:0 /usr/local/bin/entrypoint.sh /usr/local/bin/initgovway.sh \
+&& chmod ug=rx /usr/local/bin/entrypoint.sh /usr/local/bin/initgovway.sh 
+USER tomcat
 # Copio librerie providers cloud
 COPY cloud/azure/lib/ /jdbclibs/azure/
+COPY cloud/aws/lib/ /jdbclibs/aws/
+
 # Copio licenze associate alle librerie distribuite
 COPY cloud/*/third-party-licenses* /usr/share/licenses/third-party-licenses/
+
+

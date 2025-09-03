@@ -1,0 +1,13 @@
+cloudProvider: aws
+imagePullSecrets: ["nome-secret"]
+secrets:
+  iamrole: arn:aws:iam::XXXXXXXXXXXX:role/eks-irsa
+  certificateArn: arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxx
+
+ingress:
+  monitor_host: "monitor-goway-fse.local"
+  config_host: "console-goway-fse.local"
+
+# Inserire Il nome del soggetto da utilizzare
+govway:
+  entityName: sogei
