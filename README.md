@@ -31,7 +31,7 @@ Per installare un chart nel cluster Kubernetes:
 
 
 helm install <nome-release> govway-fse/<nome-chart> \
-  --version 1.1.0-alfa.1 \
+  --version 2.0.0-rc.1 \
   --namespace <namespace> \
   --values <percorso-file-valori>
 ```
@@ -41,7 +41,7 @@ helm install <nome-release> govway-fse/<nome-chart> \
 In alternativa, è possibile configurare i valori direttamente durante l'installazione utilizzando il parametro `--set`. Esempio:
 ```bash
 helm install <nome-release> govway-fse/<nome-chart> \
-  --version 1.1.0-alfa.1 \
+  --version 2.0.0-rc.1 \
   --set cloudProvider=<azure o aws> \
   --set "imagePullSecrets[0].name=<nome-secret>" \
   --set secrets.keyvaultName="<keyvault-name>" \
