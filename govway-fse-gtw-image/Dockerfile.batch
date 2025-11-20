@@ -1,4 +1,4 @@
-FROM linkitaly/govway:3.3.16.p1_batch_postgres
+FROM linkitaly/govway:3.4.1.p1_batch_postgres
 
 COPY scripts/run_batch.sh /usr/local/bin/
 RUN chown -R root:0 /usr/local/bin/run_batch.sh \

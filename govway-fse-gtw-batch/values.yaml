@@ -4,8 +4,8 @@
 
 replicaCount: 1
 govway:
-  popDbSkip: FALSE
-  readyDbCheckSkip: TRUE
+  popDbSkip: TRUE
+  readyDbCheckSkip: FALSE
   #entityName: 
   #jdbcPath: "/mnt/jars"
   serviceName: "GovWay-Batch"

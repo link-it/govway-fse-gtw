@@ -6,8 +6,8 @@ replicaCount: 1
 revisionHistoryLimit: 10
 
 govway:
-  popDbSkip: FALSE
-  readyDbCheckSkip: TRUE
+  popDbSkip: TRUE
+  readyDbCheckSkip: FALSE
   entityName: 
   #jdbcPath: "/mnt/jars"
   serviceName: "GovWay-Run"

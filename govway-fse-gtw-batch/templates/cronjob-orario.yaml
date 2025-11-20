@@ -18,7 +18,7 @@ spec:
           containers:
           - name: {{ include "govway_fse_gtw.fullname" . }}-statistiche-orarie
             image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_batch" .Chart.AppVersion) }}"
-            imagePullPolicy: Always
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
             args:
             - orarie
             env:
@@ -98,6 +98,9 @@ spec:
             {{ else if eq .Values.cloudProvider "aws" }}
               - name: AWS_LOG_LEVEL
                 value: {{ .Values.govway.logLevel }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+              {{- toYaml . | nindent 14 }}
             {{- end }}
           restartPolicy: OnFailure
           {{- with .Values.imagePullSecrets }}

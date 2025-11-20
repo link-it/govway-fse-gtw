@@ -92,6 +92,9 @@ spec:
             - name: AWS_LOG_LEVEL
               value: {{ .Values.govway.logLevel }}
             {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry.urlGovWay }}/{{ .Values.image.registry.repositoryGovWay }}:{{ .Values.image.tag | default (printf "%s_run" .Chart.AppVersion) }}"

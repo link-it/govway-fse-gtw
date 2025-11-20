@@ -1,0 +1,13 @@
+test
+
+# kind test environment generated files
+kind
+kind/certs/*.pem
+kind/certs/*.p12
+kind/certs/*.csr
+kind/certs/*.srl
+kind/certs/*.conf
+kind/certs/certs-secrets.yaml
+
+# Generated dummy certificates for LocalStack/testing
+kind/certs-generated/

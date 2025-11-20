@@ -22,8 +22,8 @@ mappa_suffissi[STAT]=Statistiche
 declare -A mappa_dbinfo
 mappa_dbinfo[RUN]='db_info'
 mappa_dbinfo[CONF]='db_info_console'
-mappa_dbinfo[TRAC]='db_info'
-mappa_dbinfo[STAT]='db_info'
+mappa_dbinfo[TRAC]='transazioni'
+mappa_dbinfo[STAT]='statistiche'
 
 declare -A mappa_dbinfostring
 mappa_dbinfostring[RUN]='%Database di GovWay'
@@ -59,11 +59,14 @@ do
         eval "DBPASS=\${GOVWAY_${DESTINAZIONE}_DB_PASSWORD}"
         eval "QUERYSTRING=\${DATASOURCE_${DESTINAZIONE}_CONN_PARAM}"
     fi
+
     SERVER_PORT="${SERVER#*:}"
     SERVER_HOST="${SERVER%:*}"
+
+    # Verifico se c'è condivisione con il database di runtime
     USE_RUN_DB=FALSE
     [ "${DESTINAZIONE}" != 'RUN' -a "${SERVER}" == "${GOVWAY_DB_SERVER}" -a "${DBNAME}" == "${GOVWAY_DB_NAME}" ] && USE_RUN_DB=TRUE
-
+    [ "${GOVWAY_DB_TYPE:-hsql}" == 'hsql' ] && USE_RUN_DB=TRUE
 
     case "${GOVWAY_DB_TYPE:-hsql}" in
     oracle)
@@ -134,7 +137,7 @@ fi
     # Server liveness
     if [ "${GOVWAY_LIVE_DB_CHECK_SKIP^^}" == "FALSE" -a "${GOVWAY_DB_TYPE:-hsql}" != 'hsql' ]
     then
-    	echo "INFO: Liveness base dati ${DESTINAZIONE} ... attendo"
+    	echo "INFO: Liveness base dati ${DESTINAZIONE} ... verifico connessione"
 	    sleep ${GOVWAY_LIVE_DB_CHECK_FIRST_SLEEP_TIME}s
 	    DB_READY=1
 	    NUM_RETRY=0
@@ -145,16 +148,16 @@ fi
             NUM_RETRY=$(( ${NUM_RETRY} + 1 ))
             if [  ${DB_READY} -ne 0 ]
             then
-                echo "INFO: Liveness base dati ${DESTINAZIONE} ... attendo"
+                echo "INFO: Liveness base dati ${DESTINAZIONE} ... fallita connessione. Riprovo"
                 sleep ${GOVWAY_LIVE_DB_CHECK_SLEEP_TIME}s
             fi
 	    done
        	if [  ${DB_READY} -ne 0 -a ${NUM_RETRY} -eq ${GOVWAY_LIVE_DB_CHECK_MAX_RETRY} ]
 	    then
-		    echo "FATAL: Liveness base dati ${DESTINAZIONE} ... Base dati NON disponibile dopo $((${GOVWAY_LIVE_DB_CHECK_SLEEP_TIME=} * ${GOVWAY_LIVE_DB_CHECK_MAX_RETRY})) secondi"
+		    echo "FATAL: Liveness base dati ${DESTINAZIONE} ... connessione NON disponibile dopo $((${GOVWAY_LIVE_DB_CHECK_SLEEP_TIME=} * ${GOVWAY_LIVE_DB_CHECK_MAX_RETRY})) secondi"
 		    exit 1
         else
-            echo "INFO: Liveness base dati ${DESTINAZIONE} ... Base dati disponibile"
+            echo "INFO: Liveness base dati ${DESTINAZIONE} ... connessione disponibile"
 	    fi
     fi
     # Server Readyness
@@ -189,6 +192,7 @@ fi
 
         DB_READY=1
 	    NUM_RETRY=0
+        echo "INFO: Readyness base dati ${DESTINAZIONE} ... verifico inizializzazione"
         while [ ${DB_READY} -ne 0 -a ${NUM_RETRY} -lt ${GOVWAY_READY_DB_CHECK_MAX_RETRY} ]
 	    do
             EXIST=$(java ${INVOCAZIONE_CLIENT} --sql="${EXIST_QUERY}" govwayDB${DESTINAZIONE} 2> /dev/null)
@@ -208,31 +212,16 @@ fi
             ##ripulisco gli spazi
             EXIST="${EXIST// /}"
         fi
-        if [ ${EXIST} -eq 1 ]
+        POP=${EXIST} 
+        if [ -n "${POP}" -a ${POP} -eq 0 ]
         then
-            #  possibile che il db sia usato per piu' funzioni devo verifcare che non sia gia' stato popolato
-            #DBINFONOTES="${mappa_dbinfostring[${DESTINAZIONE}]}"
-            #POP_QUERY="SELECT count(*) FROM ${DBINFO} where notes LIKE '${DBINFONOTES}';"
-
-            POP_QUERY="SELECT count(*) FROM ${DBINFO};"
-            POP=$(java ${INVOCAZIONE_CLIENT} --sql="${POP_QUERY}" govwayDB${DESTINAZIONE} 2> /dev/null)
-            ##ripulisco gli spazi
-            POP="${POP// /}"
-
-        fi
         # Popolamento automatico del db 
         if [ "${GOVWAY_POP_DB_SKIP^^}" == "FALSE" ]
         then 
-            if [ "${USE_RUN_DB^^}" == "TRUE" ]
-            then
-                MAX_COUNT=3
-                [ ${DESTINAZIONE} == 'CONF' ] && MAX_COUNT=1
-            else
-                MAX_COUNT=1
-            fi
-            if [ -n "${POP}" -a ${POP} -lt ${MAX_COUNT} ]
-            then
-                echo "WARN: Readyness base dati ${DESTINAZIONE} ... non inizializzato"
+                echo "WARN: Readyness base dati ${DESTINAZIONE} ... non inizializzato (popolamento automatico abilitato)"
+                echo
+
+
                 SUFFISSO="${mappa_suffissi[${DESTINAZIONE}]}"
                 mkdir -p /var/tmp/${GOVWAY_DB_TYPE:-hsql}/
                 #
@@ -245,26 +234,28 @@ fi
                 #
                 if [ "${DESTINAZIONE}" != 'RUN' ]
                 then
-                    if [[ ( "${GOVWAY_DB_TYPE:-hsql}" == 'hsql' && ${DBINFO} == "db_info" ) || ( ${DBINFO} == "db_info" && "${USE_RUN_DB}" == "TRUE" ) ]]
+                    if [ "${USE_RUN_DB}" == "TRUE" ]
                     then
-                        sed  \
-                        -e '/CREATE TABLE db_info/,/;/d' \
-                        -e '/CREATE SEQUENCE seq_db_info/d' \
-                        -e '/CREATE TABLE OP2_SEMAPHORE/,/;/d' \
-                        -e '/CREATE SEQUENCE seq_OP2_SEMAPHORE/d' \
-                        -e '/CREATE TRIGGER trg_OP2_SEMAPHORE/,/\//d' \
-                        -e '/CREATE UNIQUE INDEX idx_semaphore_1/d' \
-                        -e '/CREATE TRIGGER trg_db_info/,/\//d' \
-                        /opt/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql > /var/tmp/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql 
-		            elif [[ ( ${DBINFO} == "db_info_console" && "${USE_RUN_DB}" == "TRUE" && "${DESTINAZIONE}" == 'CONF' ) ]]
-      		        then
-                        sed  \
-                        -e '/CREATE TABLE OP2_SEMAPHORE/,/;/d' \
-                        -e '/CREATE SEQUENCE seq_OP2_SEMAPHORE/d' \
-                        -e '/CREATE TRIGGER trg_OP2_SEMAPHORE/,/\//d' \
-                        -e '/CREATE UNIQUE INDEX idx_semaphore_1/d' \
-                        /opt/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql > /var/tmp/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql 
-                    fi
+                        if [ "${DESTINAZIONE}" == 'CONF' ]
+                        then
+                            sed  \
+                            -e '/CREATE TABLE OP2_SEMAPHORE/,/;/d' \
+                            -e '/CREATE SEQUENCE seq_OP2_SEMAPHORE/d' \
+                            -e '/CREATE TRIGGER trg_OP2_SEMAPHORE/,/\//d' \
+                            -e '/CREATE UNIQUE INDEX idx_semaphore_1/d' \
+                            /opt/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql > /var/tmp/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql 
+                       else
+                            sed  \
+                            -e '/CREATE TABLE db_info/,/;/d' \
+                            -e '/CREATE SEQUENCE seq_db_info/d' \
+                            -e '/CREATE TABLE OP2_SEMAPHORE/,/;/d' \
+                            -e '/CREATE SEQUENCE seq_OP2_SEMAPHORE/d' \
+                            -e '/CREATE TRIGGER trg_OP2_SEMAPHORE/,/\//d' \
+                            -e '/CREATE UNIQUE INDEX idx_semaphore_1/d' \
+                            -e '/CREATE TRIGGER trg_db_info/,/\//d' \
+                            /opt/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql > /var/tmp/${GOVWAY_DB_TYPE:-hsql}/GovWay${SUFFISSO}.sql 
+                       fi
+                   fi
                 fi
                 #
                 # Aggiusto l'SQL per i database MySQL e MariaDB 
@@ -296,7 +287,7 @@ fi
                 #
                 # Inizializzazione database ${DESTINAZIONE}
                 # 
-                echo "INFO: Readyness base dati ${DESTINAZIONE} ... inizializzazione avviata."
+                echo "INFO: Readyness base dati ${DESTINAZIONE} ... popolamento automatico avviata."
                 java ${INVOCAZIONE_CLIENT} --continueOnErr=false govwayDB${DESTINAZIONE} << EOSCRIPT
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 ${START_TRANSACTION}
@@ -305,26 +296,23 @@ ${START_TRANSACTION}
 COMMIT;
 EOSCRIPT
                 DB_POP=$?
+                if [  $DB_POP -eq 0 ]
+                then
+                  echo
+                  echo "INFO: Readyness base dati ${DESTINAZIONE} ... popolamento automatico completata."   
+                  echo
+                else
+                  echo
+                  echo "INFO: Readyness base dati ${DESTINAZIONE} ... popolamento automatico fallita."
+                  echo
+                  exit $DB_POP
+                fi 
+            else            
+                echo "ERROR: Readyness base dati ${DESTINAZIONE} ... non inizializzato (popolamento automatico disabilitato)"
+                exit 3
             fi
-            if [ $POP -ge 1 -o $DB_POP -eq 0 ] 
-            then
-                #TODO: da valutare come soluzione per il caso delle connessioni in blocking-timeut
-                #      quando il db è hsql
-                #if  [ "${GOVWAY_DB_TYPE:-hsql}" != 'hsql' ]
-                #then
-                #    echo
-                #    echo "INFO: Readyness base dati ${DESTINAZIONE} ... setto dtatase in modalita MVCC."
-                #    java ${INVOCAZIONE_CLIENT} --continueOnErr=false --autoCommit govwayDB${DESTINAZIONE} << EOSCRIPT    
-    #SET DATABASE TRANSACTION CONTROL MVCC;
-    #EOSCRIPT
-                #fi
-                echo
-                echo "INFO: Readyness base dati ${DESTINAZIONE} ... inizializzazione completata."   
-            else
-                echo
-                echo "INFO: Readyness base dati ${DESTINAZIONE} ... inizializzazione fallita."
-                exit $DB_POP
-            fi 
+        else 
+            echo "INFO: Readyness base dati ${DESTINAZIONE} ... inizializzata."   
         fi
     fi
 done

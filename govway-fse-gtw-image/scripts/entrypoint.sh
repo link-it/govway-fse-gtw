@@ -106,19 +106,19 @@ GOVWAY_DB_USER: ${GOVWAY_DB_USER}
             then
                 GOVWAY_CONF_DS_CONN_PARAM="${GOVWAY_CONF_DS_CONN_PARAM}&wrapperPlugins=iam"
             else
-                GOVWAY_CONF_DS_CONN_PARAM='wrapperPlugins=iam'
+                GOVWAY_CONF_DS_CONN_PARAM="${GOVWAY_DS_CONN_PARAM}"
             fi
             if [ -n "${GOVWAY_TRAC_DS_CONN_PARAM}" ]
             then
                 GOVWAY_TRAC_DS_CONN_PARAM="${GOVWAY_TRAC_DS_CONN_PARAM}&wrapperPlugins=iam"
             else
-                GOVWAY_TRAC_DS_CONN_PARAM='wrapperPlugins=iam'
+                GOVWAY_TRAC_DS_CONN_PARAM="${GOVWAY_DS_CONN_PARAM}"
             fi
             if [ -n "${GOVWAY_STAT_DS_CONN_PARAM}" ]
             then
                 GOVWAY_STAT_DS_CONN_PARAM="${GOVWAY_STAT_DS_CONN_PARAM}&wrapperPlugins=iam"
             else
-                GOVWAY_STAT_DS_CONN_PARAM='wrapperPlugins=iam'
+                GOVWAY_STAT_DS_CONN_PARAM="${GOVWAY_DS_CONN_PARAM}"
             fi    
             export GOVWAY_DS_DRIVER_CLASS='software.amazon.jdbc.Driver'
     
@@ -341,22 +341,42 @@ export GOVWAY_STAT_MAXIDLE_POOL=${GOVWAY_STAT_MAXIDLE_POOL:-${GOVWAY_STAT_MAX_PO
 
 # Recupero l'indirizzo ip usato dal container (utilizzato dalle funzionalita di clustering / orchestration)
 export GW_IPADDRESS=$(grep -E "[[:space:]]${HOSTNAME}[[:space:]]*" /etc/hosts|head -n 1|awk '{print $1}')
+# 
+[ -z ${GOVWAY_SERVICE_PROTOCOL} ] && export GOVWAY_SERVICE_PROTOCOL=http
+[ -z ${GOVWAY_SERVICE_HOST} ] && export GOVWAY_SERVICE_HOST=127.0.0.1
+[ -z ${GOVWAY_SERVICE_PORT} ] && export GOVWAY_SERVICE_PORT=8082
 
 #
 # Startup
 #
 
 # Impostazione Dinamica dei limiti di memoria per container
-if [ ${GOVWAY_ARCHIVES_TYPE} == "manager" -o ${GOVWAY_ARCHIVES_TYPE} == "all" ]
-then 
-    export JAVA_OPTS="$JAVA_OPTS -XX:MaxRAMPercentage=50"
-else
-    export JAVA_OPTS="$JAVA_OPTS -XX:MaxRAMPercentage=${MAX_JVM_PERC:-80}"
+
+# Backward compatibility: supporto MAX_JVM_PERC deprecato
+if [ -n "${MAX_JVM_PERC}" ]; then
+    echo "WARN: La variabile MAX_JVM_PERC è deprecata. Usare GOVWAY_JVM_MAX_RAM_PERCENTAGE"
+    [ -z "${GOVWAY_JVM_MAX_RAM_PERCENTAGE}" ] && GOVWAY_JVM_MAX_RAM_PERCENTAGE="${MAX_JVM_PERC}"
 fi
+
+# Default basati su tipo archivi
+if [ ${GOVWAY_ARCHIVES_TYPE} == "manager" -o ${GOVWAY_ARCHIVES_TYPE} == "all" ]; then
+    DEFAULT_MAX_RAM_PERCENTAGE=50
+else
+    DEFAULT_MAX_RAM_PERCENTAGE=80
+fi
+
+# Costruzione parametri memoria JVM
+JVM_MEMORY_OPTS="-XX:MaxRAMPercentage=${GOVWAY_JVM_MAX_RAM_PERCENTAGE:-${DEFAULT_MAX_RAM_PERCENTAGE}}"
+[ -n "${GOVWAY_JVM_INITIAL_RAM_PERCENTAGE}" ] && JVM_MEMORY_OPTS="$JVM_MEMORY_OPTS -XX:InitialRAMPercentage=${GOVWAY_JVM_INITIAL_RAM_PERCENTAGE}"
+[ -n "${GOVWAY_JVM_MIN_RAM_PERCENTAGE}" ] && JVM_MEMORY_OPTS="$JVM_MEMORY_OPTS -XX:MinRAMPercentage=${GOVWAY_JVM_MIN_RAM_PERCENTAGE}"
+[ -n "${GOVWAY_JVM_MAX_METASPACE_SIZE}" ] && JVM_MEMORY_OPTS="$JVM_MEMORY_OPTS -XX:MaxMetaspaceSize=${GOVWAY_JVM_MAX_METASPACE_SIZE}"
+[ -n "${GOVWAY_JVM_MAX_DIRECT_MEMORY_SIZE}" ] && JVM_MEMORY_OPTS="$JVM_MEMORY_OPTS -XX:MaxDirectMemorySize=${GOVWAY_JVM_MAX_DIRECT_MEMORY_SIZE}"
+
+export JAVA_OPTS="$JAVA_OPTS $JVM_MEMORY_OPTS"
 
 
 # Inizializzazione del database
-/usr/local/bin/initsql.sh || { echo "FATAL: Scripts sql non inizializzati."; exit 1; }
+/usr/local/bin/initsql.sh nohelp || { echo "FATAL: Scripts sql non inizializzati."; exit 1; }
 /usr/local/bin/initgovway.sh || { echo "FATAL: Database non inizializzato."; exit 1; }
 
 # Eventuali inizializzazioni custom

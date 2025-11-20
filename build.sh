@@ -21,6 +21,7 @@ convert_to_semver() {
 }
 
 VERSION=${1:?Indicare la versione}
+PUBLISH=${2:FALSE}
 SEMVER=$(convert_to_semver ${VERSION})
 
 cd govway-fse-gtw-image
@@ -28,11 +29,6 @@ docker build -t linkitaly/govway-fse-gtw:${VERSION}_run -f Dockerfile.run .
 docker build -t linkitaly/govway-fse-gtw:${VERSION}_manager -f Dockerfile.manager .
 docker build -t linkitaly/govway-fse-gtw:${VERSION}_batch -f Dockerfile.batch .
 cd ..
-
-
-docker push linkitaly/govway-fse-gtw:${VERSION}_run
-docker push linkitaly/govway-fse-gtw:${VERSION}_manager 
-docker push linkitaly/govway-fse-gtw:${VERSION}_batch 
 
  
 
@@ -45,13 +41,24 @@ do
    helm package $chart --destination govway-fse-gtw-helm --version ${SEMVER}
 done
 
-helm repo index .
+case ${PUBLISH,,} in
+si|true|1|yes|y|s)
+	helm repo index .
+	docker push linkitaly/govway-fse-gtw:${VERSION}_run
+	docker push linkitaly/govway-fse-gtw:${VERSION}_manager 
+	docker push linkitaly/govway-fse-gtw:${VERSION}_batch 
 
 
-echo 
-echo "helm repo add govway-fse https://link-it.github.io/govway-fse-gtw"
-echo
-echo "helm fetch govway-fse/govway-fse-gtw-run --version ${SEMVER}"
-echo "helm fetch govway-fse/govway-fse-gtw-manager --version ${SEMVER}"
-echo "helm fetch govway-fse/govway-fse-gtw-batch --version ${SEMVER}"
-echo
+	echo 
+	echo "helm repo add govway-fse https://link-it.github.io/govway-fse-gtw"
+	echo
+	echo "helm fetch govway-fse/govway-fse-gtw-run --version ${SEMVER}"
+	echo "helm fetch govway-fse/govway-fse-gtw-manager --version ${SEMVER}"
+	echo "helm fetch govway-fse/govway-fse-gtw-batch --version ${SEMVER}"
+	echo
+	;;
+*)
+	echo
+	echo "helm chart pronti in govway-fse-gtw-helm/"
+	;;
+esac
